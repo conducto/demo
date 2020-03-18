@@ -1,5 +1,5 @@
 """
-Show usage of the different node types, Parallel, Serial, and Exec.
+Teach how to debug and fix errors in the app.
 """
 import conducto as do
 import os, sys

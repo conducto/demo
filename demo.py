@@ -1,8 +1,8 @@
 import conducto as do
 try:
-    from steps import intro, node_types, errors, utils
+    from steps import intro, node_types, errors, utils, data
 except ImportError:
-    from .steps import intro, node_types, errors, utils
+    from .steps import intro, node_types, errors, utils, data
 
 
 def walkthrough() -> do.Parallel:
@@ -10,6 +10,7 @@ def walkthrough() -> do.Parallel:
     output["Intro"] = do.lazy_py(intro.intro)
     output["Node Types"] = node_types.run()
     output["Error Handling"] = errors.run()
+    output["Data"] = data.run()
 
     for name, node in output.children.items():
         if name != "Intro":
