@@ -2,21 +2,21 @@
 Use TempData, PermData, and do.lazy_py to crunch data in parallel
 """
 import conducto as do
-import collections, json, math, random
+import collections, json, math, os, random
 
 try:
     import utils
 except ImportError:
     from . import utils
 
-MAX_SIZE = 8
+MAX_SIZE = 6
 
 
 def run() -> do.Serial:
     # You can use 'with' statement (context manager) to build the pipeline. This
     # helps make your code indentation mimic the structure of the Nodes.
     with do.Serial(image=utils.IMG) as output:
-        output["Show source"] = do.lazy_py(utils.print_source, do.relpath(__file__))
+        output["Show source"] = do.lazy_py(utils.print_source, do.relpath(os.path.abspath(__file__)))
 
         input_path = "conducto/demo_data"
         temp_dir = "conducto/demo_data"
@@ -52,7 +52,7 @@ def gen_data(count: int, path: str, force=do.env_bool("FORCE")):
     print(f"Downloaded {len(words_raw)} words ({len(text)} bytes) from {url}")
 
     words_filtered = [w.ljust(MAX_SIZE) for w in words_raw if w.islower() and w.isalpha() and 3 <= len(w) <= MAX_SIZE]
-    print(f"Filtered to only lowercase words, 3 to 8 characters. {len(words_filtered)} remain.")
+    print(f"Filtered to only lowercase words, 3 to {MAX_SIZE} characters. {len(words_filtered)} remain.")
 
     words = random.choices(words_filtered, k=count)
     text = b"\n".join(words) + b"\n"
@@ -71,8 +71,9 @@ def parallelize(input_path, temp_dir, top: int, chunksize: int) -> do.Parallel:
     num_chunks = math.ceil(data_size / (MAX_SIZE + 1) / chunksize)
     for i in range(num_chunks):
         start = i * (MAX_SIZE + 1) * chunksize
+        end = (i + 1) * (MAX_SIZE + 1) * chunksize
         output[f"Chunk-{i}"] = do.lazy_py(
-            do_chunk, input_path, temp_dir, top=top, start=start, end=start + chunksize)
+            do_chunk, input_path, temp_dir, top=top, start=start, end=end)
     return output
 
 

@@ -14,7 +14,7 @@ def run() -> do.Serial:
     # You can use 'with' statement (context manager) to build the pipeline. This
     # helps make your code indentation mimic the structure of the Nodes.
     with do.Serial(image=utils.IMG) as output:
-        output["Show source"] = do.lazy_py(utils.print_source, do.relpath(__file__))
+        output["Show source"] = do.lazy_py(utils.print_source, do.relpath(os.path.abspath(__file__)))
 
         do.Exec("conducto steps/errors.py build", name="Build")
 
