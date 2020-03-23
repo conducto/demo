@@ -21,7 +21,9 @@ def run() -> do.Serial:
 
     # Use do.Serial() to build then test.
     pipeline = do.Serial(image=utils.IMG)
-    pipeline["Show source"] = do.lazy_py(utils.print_source, do.relpath(os.path.abspath(__file__)))
+    pipeline["Show source"] = do.lazy_py(
+        utils.print_source, do.relpath(os.path.abspath(__file__))
+    )
     pipeline["Build"] = build_node
     pipeline["Test"] = test_node
 

@@ -9,4 +9,5 @@ You can also right-click and select "Unskip" from the context menu.
 def intro():
     print(INTRO_MESSAGE.strip())
 
+
 # TODO: add an image of the "Unskip" part of the toolbar once that's supported

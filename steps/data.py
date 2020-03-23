@@ -16,16 +16,22 @@ def run() -> do.Serial:
     # You can use 'with' statement (context manager) to build the pipeline. This
     # helps make your code indentation mimic the structure of the Nodes.
     with do.Serial(image=utils.IMG) as output:
-        output["Show source"] = do.lazy_py(utils.print_source, do.relpath(os.path.abspath(__file__)))
+        output["Show source"] = do.lazy_py(
+            utils.print_source, do.relpath(os.path.abspath(__file__))
+        )
 
         input_path = "conducto/demo_data"
         temp_dir = "conducto/demo_data"
 
         # Generate 5M random words.
-        output["Generate data"] = do.lazy_py(gen_data, count=5000 * 1000, path=input_path)
+        output["Generate data"] = do.lazy_py(
+            gen_data, count=5000 * 1000, path=input_path
+        )
 
         # Parallelize over the input
-        output["Parallel word count"] = do.lazy_py(parallelize, input_path, temp_dir, top=15, chunksize=50 * 1000)
+        output["Parallel word count"] = do.lazy_py(
+            parallelize, input_path, temp_dir, top=15, chunksize=50 * 1000
+        )
         output["Summarize"] = do.lazy_py(summarize, temp_dir, top=15)
     return output
 
@@ -37,6 +43,7 @@ def gen_data(count: int, path: str, force=do.env_bool("FORCE")):
     to force regeneration.
     """
     import urllib.request
+
     print(f"Generating {count} words and storing them to PermData:{path}.")
     if do.PermData.exists(path):
         if force:
@@ -51,8 +58,14 @@ def gen_data(count: int, path: str, force=do.env_bool("FORCE")):
     words_raw = text.splitlines()
     print(f"Downloaded {len(words_raw)} words ({len(text)} bytes) from {url}")
 
-    words_filtered = [w.ljust(MAX_SIZE) for w in words_raw if w.islower() and w.isalpha() and 3 <= len(w) <= MAX_SIZE]
-    print(f"Filtered to only lowercase words, 3 to {MAX_SIZE} characters. {len(words_filtered)} remain.")
+    words_filtered = [
+        w.ljust(MAX_SIZE)
+        for w in words_raw
+        if w.islower() and w.isalpha() and 3 <= len(w) <= MAX_SIZE
+    ]
+    print(
+        f"Filtered to only lowercase words, 3 to {MAX_SIZE} characters. {len(words_filtered)} remain."
+    )
 
     words = random.choices(words_filtered, k=count)
     text = b"\n".join(words) + b"\n"
@@ -73,7 +86,8 @@ def parallelize(input_path, temp_dir, top: int, chunksize: int) -> do.Parallel:
         start = i * (MAX_SIZE + 1) * chunksize
         end = (i + 1) * (MAX_SIZE + 1) * chunksize
         output[f"Chunk-{i}"] = do.lazy_py(
-            do_chunk, input_path, temp_dir, top=top, start=start, end=end)
+            do_chunk, input_path, temp_dir, top=top, start=start, end=end
+        )
     return output
 
 

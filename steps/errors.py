@@ -12,9 +12,11 @@ except ImportError:
 
 def run() -> do.Serial:
     # You can use 'with' statement (context manager) to build the pipeline. This
-    # helps make your code indentation mimic the structure of the Nodes.
+    # helpfully makes your code indentation mimic the structure of the Nodes.
     with do.Serial(image=utils.IMG) as output:
-        output["Show source"] = do.lazy_py(utils.print_source, do.relpath(os.path.abspath(__file__)))
+        output["Show source"] = do.lazy_py(
+            utils.print_source, do.relpath(os.path.abspath(__file__))
+        )
 
         do.Exec("conducto steps/errors.py build", name="Build")
 
@@ -33,19 +35,23 @@ def build():
     print("Building.")
 
 
+ERROR_MSG = """Must specify AUTH_TOKEN in the environment.
+- Select the 'Test' node
+- Click 'Modify' in the toolbar
+- Set 'AUTH_TOKEN' to any value you want
+- Reset errors using the toolbar"""
+
+SUCCESS_MSG = """Got AUTH_TOKEN of {}
+
+Good job. You just debugged and fixed an error. May all your errors be this easy to fix."""
+
+
 def test(service_name):
     print(f"Starting test for {service_name}")
     if not os.getenv("AUTH_TOKEN"):
-        print("Must specify AUTH_TOKEN in the environment.", file=sys.stderr)
-        print("- Select the 'Test' node", file=sys.stderr)
-        print("- Click 'Modify' in the toolbar", file=sys.stderr)
-        print("- Set 'AUTH_TOKEN' to any value you want", file=sys.stderr)
-        print("- Reset errors using the toolbar", file=sys.stderr)
+        print(ERROR_MSG, file=sys.stderr)
         raise ValueError("Missing AUTH_TOKEN")
-    print()
-    print(f"Got AUTH_TOKEN of {repr(os.environ['AUTH_TOKEN'])}")
-    print()
-    print("Good job. You just debugged and fixed an error. May all your errors be this easy to fix.")
+    print(SUCCESS_MSG.format(repr(os.environ["AUTH_TOKEN"])))
 
 
 if __name__ == "__main__":

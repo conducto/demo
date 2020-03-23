@@ -9,4 +9,3 @@ def print_source(file):
     """
     with open(file) as f:
         print(f.read())
-
