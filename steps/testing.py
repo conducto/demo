@@ -39,28 +39,28 @@ def run() -> do.Serial:
         "docker run -p 6379:6379 -d --rm --name conducto_demo_redis redis:alpine"
     )
     output["Test"] = do.Serial()
-    output["Test/Write"] = do.lazy_py(write, key="hello", value="world")
-    output["Test/Read"] = do.lazy_py(read, key="hello", expected="world")
+    output["Test/Write"] = do.lazy_py(write, key="hello", value=b"world")
+    output["Test/Read"] = do.lazy_py(read, key="hello", expected=b"world")
     output["Stop"] = do.Exec("docker kill conducto_demo_redis || true")
     return output
 
 
-def write(key, value):
+def write(key, value: bytes):
     import redis
 
-    r = redis.Redis(host="localhost", port=6379, db=0)
+    r = redis.Redis(host="host.docker.internal", port=6379, db=0)
     print(f"Setting {repr(key)}=>{repr(value)}")
     r.set(key, value)
     print(f"Getting {repr(key)}")
     v = r.get(key)
-    assert v == value, "Mismatch when setting value"
+    assert v == value, f"Mismatch when setting value. Expected {repr(value)} but got {repr(v)}"
     print("Passed")
 
 
-def read(key, expected):
+def read(key, expected: bytes):
     import redis
 
-    r = redis.Redis(host="localhost", port=6379, db=0)
+    r = redis.Redis(host="host.docker.internal", port=6379, db=0)
     print(f"Getting {repr(key)}")
     value = r.get(key)
     print(f"Got {repr(value)}, expected {repr(expected)}")
