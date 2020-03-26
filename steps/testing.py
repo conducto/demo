@@ -14,6 +14,7 @@ functionality. Conducto has several features that help with this:
 """
 import conducto as do
 import os
+import subprocess
 
 try:
     import utils
@@ -48,7 +49,7 @@ def run() -> do.Serial:
 def write(key, value: bytes):
     import redis
 
-    r = redis.Redis(host="host.docker.internal", port=6379, db=0)
+    r = redis.Redis(host=get_internal_host(), port=6379, db=0)
     print(f"Setting {repr(key)}=>{repr(value)}")
     r.set(key, value)
     print(f"Getting {repr(key)}")
@@ -62,11 +63,16 @@ def write(key, value: bytes):
 def read(key, expected: bytes):
     import redis
 
-    r = redis.Redis(host="host.docker.internal", port=6379, db=0)
+    r = redis.Redis(host=get_internal_host(), port=6379, db=0)
     print(f"Getting {repr(key)}")
     value = r.get(key)
     print(f"Got {repr(value)}, expected {repr(expected)}")
     assert value == expected, f"Value ({repr(value)} != expected ({repr(expected)})"
+
+
+def get_internal_host():
+    p = subprocess.run("ip route show default | awk '/default/{print $3}'", shell=True, capture_output=True)
+    return p.stdout.decode("utf-8").strip()
 
 
 if __name__ == "__main__":
