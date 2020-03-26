@@ -1,6 +1,6 @@
 FROM python:3.8-alpine
 
-RUN curl -sSL https://get.docker.com | sh
+RUN apk update && apk add docker
 RUN pip install --upgrade pip
 RUN pip install conducto redis
 
