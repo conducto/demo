@@ -9,8 +9,8 @@ except ImportError:
 def run() -> do.Parallel:
     print(
         """Welcome to the Conducto demo. If this is your first time running Conducto,
-it may take a little while to download the Docker images. We're working on
-improving this, we're just not there yet. Thanks for your patience!
+it may take a little while to download the Docker images. We are working on making
+this more transparent. Thanks for your patience!
 """)
 
     output = do.Parallel(image=utils.IMG)

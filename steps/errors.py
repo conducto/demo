@@ -66,24 +66,29 @@ def test_backend():
     # FIXME: Change this 'True' to 'False'. Yes, this error is trivial. You're welcome.
     if True:
         print(
-            """Code error! Conducto has a few ways to help you fix this.
-        
-1. Click the 'Debug' icon (to the right of 'Command') to copy a command to your 
-clipboard that launches this node in a container on your machine. All the code
-and environment is there, ready for you to debug the error interactively.
+            """Code error! 
+            
+To dig in further:
+- Click the 'Debug' icon (to the right of 'Command') to copy a command to your clipboard.
+- Paste and run it to drop into a container that contains all the code and
+  environment for this node, ready for you to debug the error interactively.
+- Follow the instructions to install your favorite editor.
+- Open 'steps/errors.py' in your editor.
+- Search for 'FIXME' and fix the bug.
+- Run `./conducto.cmd` and follow the instructions.
 
-2. Open this file in an editor, fix the code, and then click the 'Rebuild' icon
-(next to 'Debug'). This rebuilds the Docker image for this node, grabbing your
-latest code. Reset the error and now it will pass.
-"""
-        )
+""")
         raise Exception("Code error! See stdout for details on how to fix.")
     else:
-        print(
-            """You just learned 'Debug' and 'Rebuild'. We've loved using them
-as we've built and debugged our build/test/deploy pipeline, and we hope you like
-them too. Talk to us on Slack and let us know!"""
-        )
+        print("""
+Great job using 'Debug'. Now quit this container and in an editor open this file
+(demo/steps/error.py). Make the same fix and then click the 'Rebuild' icon (next
+to 'Debug'). This rebuilds the Docker image for this node, grabbing your
+latest code. Reset the error and now it will pass.
+
+Once you're done, you'll have learned 'Debug' and 'Rebuild'. We've loved using
+them as we've built and debugged our build/test/deploy pipeline, and we hope you
+like them too. Talk to us on Slack and let us know!""")
 
 
 def test_metrics():

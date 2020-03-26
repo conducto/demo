@@ -1,7 +1,4 @@
-FROM python:3.8-slim
-
-RUN apt-get update && apt-get install -y \
-  gcc curl vim less jq git rsync
+FROM python:3.8-alpine
 
 RUN curl -sSL https://get.docker.com | sh
 RUN pip install --upgrade pip
