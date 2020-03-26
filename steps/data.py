@@ -96,11 +96,11 @@ def do_chunk(input_path, temp_dir, top: int, start: int, end: int):
     Count the `top` words from the assigned chunk of `input_path`, saving the data in
     `temp_dir`.
     """
-    text = do.PermData.gets(input_path, byte_range=[start, end])
+    text = do.PermData.gets(input_path, byte_range=[start, end]).decode()
     words = [l.strip() for l in text.splitlines()]
     print(f"Got {len(words)} words")
     most = collections.Counter(words).most_common(top)
-    text = json.dumps(most)
+    text = json.dumps(most).encode()
     path = f"{temp_dir}/{start}"
     do.TempData.puts(path, text)
     print(f"Wrote to {path}")
@@ -116,7 +116,7 @@ def summarize(temp_dir, top: int):
     summary = collections.Counter()
     for i, obj in enumerate(objs):
         print(f"[{i}/{len(objs)}] Reading {obj}", flush=True)
-        text = do.TempData.gets(obj)
+        text = do.TempData.gets(obj).decode()
         for word, count in json.loads(text):
             summary[word] += count
 

@@ -53,7 +53,9 @@ def write(key, value: bytes):
     r.set(key, value)
     print(f"Getting {repr(key)}")
     v = r.get(key)
-    assert v == value, f"Mismatch when setting value. Expected {repr(value)} but got {repr(v)}"
+    assert (
+        v == value
+    ), f"Mismatch when getting just-set value. Expected {repr(value)} but got {repr(v)}"
     print("Passed")
 
 

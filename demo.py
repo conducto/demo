@@ -6,7 +6,13 @@ except ImportError:
     from .steps import intro, node_types, errors, utils, data, testing
 
 
-def walkthrough() -> do.Parallel:
+def run() -> do.Parallel:
+    print(
+        """Welcome to the Conducto demo. If this is your first time running Conducto,
+it may take a little while to download the Docker images. We're working on
+improving this, we're just not there yet. Thanks for your patience!
+""")
+
     output = do.Parallel(image=utils.IMG)
     output["Intro"] = do.lazy_py(intro.intro)
     output["Node Types"] = node_types.run()
@@ -21,4 +27,4 @@ def walkthrough() -> do.Parallel:
 
 
 if __name__ == "__main__":
-    do.main(default=walkthrough)
+    do.main(default=run)
