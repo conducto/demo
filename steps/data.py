@@ -13,6 +13,7 @@ MAX_SIZE = 6
 
 
 def run() -> do.Serial:
+    print(f"<ConductoMarkdown>{__doc__}</""ConductoMarkdown>")
     # You can use 'with' statement (context manager) to build the pipeline. This
     # helps make your code indentation mimic the structure of the Nodes.
     with do.Serial(image=utils.IMG) as output:
@@ -120,8 +121,13 @@ def summarize(temp_dir, top: int):
         for word, count in json.loads(text):
             summary[word] += count
 
-    for rank, (word, count) in enumerate(summary.most_common(top)):
-        print(f"#{rank} -- {word} -- {count}")
+    print()
+    print("<ConductoMarkdown>")
+    print("rank | word | count")
+    print("-----|------|------")
+    for rank, (word, count) in enumerate(summary.most_common(top), 1):
+        print(f"#{rank} | {word} | {count}")
+    print("</ConductoMarkdown>")
 
 
 if __name__ == "__main__":

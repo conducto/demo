@@ -2,13 +2,13 @@
 Testing is a part of CI/CD that may often involve complex setup and teardown
 functionality. Conducto has several features that help with this:
 
-- do.Image(dockerfile=...): Use a custom dockerfile for this image that contains both
+- `do.Image(dockerfile=...)`: Use a custom dockerfile for this image that contains both
   Docker and Python
-- do.Serial(same_container=do.SameContainer.NEW): force all descendant Exec nodes to run
+- `do.Serial(same_container=do.SameContainer.NEW)`: force all descendant Exec nodes to run
   in one container, allowing us to deploy a service, test it, then tear it down.
-- do.Serial(stop_on_error=False) means we will get to the teardown step no matter what,
+- `do.Serial(stop_on_error=False)` means we will get to the teardown step no matter what,
   like a try/finally block.
-- do.Serial(requires_docker=True) is needed to enable running 'docker' commands in the
+- `do.Serial(requires_docker=True)` is needed to enable running 'docker' commands in the
   Exec node. By default the docker daemon is unavailable.
 
 """
@@ -23,6 +23,7 @@ except ImportError:
 
 
 def run() -> do.Serial:
+    print(f"<ConductoMarkdown>{__doc__}</""ConductoMarkdown>")
     output = do.Serial(
         image=do.Image(dockerfile="Dockerfile-testing"),
         same_container=do.SameContainer.NEW,

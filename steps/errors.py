@@ -42,12 +42,12 @@ def test_app():
     """
     if not os.getenv("AUTH_TOKEN"):
         print(
-            """Some errors can be fixed by changing the environment or the command.
-
+            """<ConductoMarkdown>Some errors can be fixed by changing the environment or the command.
 To fix this one:
-- Click 'Modify' in the toolbar")
+
+- Click ![Modify](https://github.com/conducto/demo/raw/master/images/modify.png) in the toolbar.
 - Under 'env', set 'AUTH_TOKEN' to any string you want.
-- Reset using the toolbar"""
+- Click ![Reset](https://github.com/conducto/demo/raw/master/images/reset.png) in the toolbar.</ConductoMarkdown>"""
         )
         raise ValueError("Missing AUTH_TOKEN")
     else:
@@ -66,36 +66,39 @@ def test_backend():
     # FIXME: Change this 'True' to 'False'. Yes, this error is trivial. You're welcome.
     if True:
         print(
-            """Code error! 
+            """<ConductoMarkdown>Code error! 
             
 To dig in further:
-- Click the 'Debug' icon (to the right of 'Command') to copy a command to your clipboard.
-- Paste and run it to drop into a container that contains all the code and
+- Click ![Debug](https://github.com/conducto/demo/raw/master/images/debug.png) to copy a command to your clipboard.
+- Paste and run it to drop into a container with all the code and
   environment for this node, ready for you to debug the error interactively.
 - Follow the instructions to install your favorite editor.
-- Open 'steps/errors.py' in your editor.
-- Search for 'FIXME' and fix the bug.
-- Run `./conducto.cmd` and follow the instructions.
-
-""")
+- Open `steps/errors.py` in your editor.
+- Search for `FIXME` and fix the bug.
+- Run `./conducto.cmd` and follow the instructions.</ConductoMarkdown>""")
         raise Exception("Code error! See stdout for details on how to fix.")
     else:
         print("""
 Great job using 'Debug'. Now quit this container and in an editor open this file
-(demo/steps/error.py). Make the same fix and then click the 'Rebuild' icon (next
+(`demo/steps/error.py`). Make the same fix and then click the 'Rebuild' icon (next
 to 'Debug'). This rebuilds the Docker image for this node, grabbing your
 latest code. Reset the error and now it will pass.
 
 Once you're done, you'll have learned 'Debug' and 'Rebuild'. We've loved using
 them as we've built and debugged our build/test/deploy pipeline, and we hope you
-like them too. Talk to us on Slack and let us know!""")
+like them too. Talk to us on [Slack](https://conductohq.slack.com) and let us know!
+</ConductoMarkdown>""")
 
 
 def test_metrics():
     """
     An error that should be skipped, not fixed.
     """
-    msg = "Some errors don't need to be fixed.\nPress 'Skip' in the toolbar to skip this one."
+    msg = """<ConductoMarkdown>
+Some errors don't need to be fixed.
+
+Press ![Skip](https://github.com/conducto/demo/raw/master/images/skip.png) to skip this one.
+</ConductoMarkdown>"""
     raise Exception(msg)
 
 

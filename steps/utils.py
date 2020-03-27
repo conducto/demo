@@ -7,5 +7,15 @@ def print_source(file):
     """
     Print the contents of the given file.
     """
+    if file.endswith(".py"):
+        lang = "python"
+    elif "Dockerfile" in file:
+        lang = "docker"
+    else:
+        lang = ""
+    print("<ConductoMarkdown>")
+    print(f"```{lang}")
     with open(file) as f:
         print(f.read())
+    print("```")
+    print("</ConductoMarkdown>")

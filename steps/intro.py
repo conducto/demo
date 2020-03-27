@@ -1,13 +1,14 @@
 INTRO_MESSAGE = """
-Welcome to Conducto!
+<ConductoMarkdown>
+## Welcome to Conducto!
 
-Please select the next node (Node Types) and unskip it to continue. 
+Please select the next node (Node Types) and ![unskip](https://github.com/conducto/demo/raw/master/images/unskip.png) it to continue.
 You can also right-click and select "Unskip" from the context menu.
+</ConductoMarkdown>
 """
 
 
 def intro():
     print(INTRO_MESSAGE.strip())
-
-
-# TODO: add an image of the "Unskip" part of the toolbar once that's supported
+    print("An Exec node's stdout and stderr are reported here.")
+    print("Check the source to see how to use markdown for clearer output")
