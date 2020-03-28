@@ -78,7 +78,7 @@ To dig in further:
 - Run `./conducto.cmd` and follow the instructions.</ConductoMarkdown>""")
         raise Exception("Code error! See stdout for details on how to fix.")
     else:
-        print("""
+        print("""<ConductoMarkdown>
 Great job using 'Debug'. Now quit this container and in an editor open this file
 (`demo/steps/error.py`). Make the same fix and then click the 'Rebuild' icon (next
 to 'Debug'). This rebuilds the Docker image for this node, grabbing your
