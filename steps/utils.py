@@ -1,6 +1,6 @@
-import conducto as do
+import conducto as co
 
-IMG = do.Image("python:3.8-alpine", context="..", reqs_py=["conducto"])
+IMG = co.Image("python:3.8-alpine", context="..", reqs_py=["conducto"])
 
 
 def print_source(file):

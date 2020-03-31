@@ -1,7 +1,41 @@
 """
-Use TempData, PermData, and do.lazy_py to crunch data in parallel
+# Use case: process data in parallel
+
+**Topics learned**
+- [`co.TempData` and `co.PermData`](https://conducto.com/docs/#tempdata-and-permdata)
+  are key/value data stores. `TempData` is scoped to the current pipeline, and
+  `PermData` persists outside of it.
+- Lazily generate parts of the pipeline using [`co.lazy_py`](https://conducto.com/docs/#lazy-pipeline-creation)
+  to parallelize over newly-generated data.
+
+## Pipeline
+This is a sample pipeline to do a distributed word count in a map/reduce style. While
+other purpose-built tools can solve this common example more succinctly, it illustrates
+how elegant Conducto's general approach can be. It encourages you to break the problem
+down into simple components that are easily coded, understood, visualized, and debugged.
+
+1. **Generate data**: This step ensures that a wordlist is contained in PermData. If
+  PermData already has the wordlist, exit quickly. Otherwise download a dictionary,
+  sample 5M random words, and save it to PermData.
+2. **Parallelize (aka "map")**: Analyze the contents of PermData and divide it into
+  chunks, generating an Exec node to handle each chunk. This subtree cannot be created
+  until the data has been generated, so it uses **do.lazy_py** to lazily create these
+  nodes. More detail on this below.
+3. **Process chunks in parallel**: The word count problem is easily parallelizable, so
+  each Exec node reads in a specified chunk of data from the PermData, aggregates it,
+  and stores the results to TempData.
+4. **Summarize (aka "reduce")**: Look in TempData for all the chunk-by-chunk summaries.
+Load and combine all of them to find aggregate statistics on the whole dataset.
+
+## TempData and PermData
+There are many, many ways to store data: databases, file systems, in-memory caches, or
+key/value stores, just to name a few. Conducto is a low-level platform that supports all
+of them by letting you import your own libraries and write your own code.
+
+Conducto makes your
+  
 """
-import conducto as do
+import conducto as co
 import collections, json, math, os, random
 
 try:
@@ -12,32 +46,27 @@ except ImportError:
 MAX_SIZE = 6
 
 
-def run() -> do.Serial:
-    print(f"<ConductoMarkdown>{__doc__}</""ConductoMarkdown>")
+def run() -> co.Serial:
     # You can use 'with' statement (context manager) to build the pipeline. This
     # helps make your code indentation mimic the structure of the Nodes.
-    with do.Serial(image=utils.IMG) as output:
-        output["Show source"] = do.lazy_py(
-            utils.print_source, do.relpath(os.path.abspath(__file__))
-        )
-
+    with co.Serial(image=utils.IMG, doc=__doc__) as output:
         input_path = "conducto/demo_data"
         temp_dir = "conducto/demo_data"
 
         # Generate 5M random words.
-        output["Generate data"] = do.lazy_py(
+        output["Generate data"] = co.lazy_py(
             gen_data, count=5000 * 1000, path=input_path
         )
 
         # Parallelize over the input
-        output["Parallel word count"] = do.lazy_py(
+        output["Parallel word count"] = co.lazy_py(
             parallelize, input_path, temp_dir, top=15, chunksize=50 * 1000
         )
-        output["Summarize"] = do.lazy_py(summarize, temp_dir, top=15)
+        output["Summarize"] = co.lazy_py(summarize, temp_dir, top=15)
     return output
 
 
-def gen_data(count: int, path: str, force=do.env_bool("FORCE")):
+def gen_data(count: int, path: str, force=co.env_bool("FORCE")):
     """
     Generate `count` random English words and save them to `path`. Skip if the data
     already exists, unless `force` is specified. Set the environment variable FORCE
@@ -46,7 +75,7 @@ def gen_data(count: int, path: str, force=do.env_bool("FORCE")):
     import urllib.request
 
     print(f"Generating {count} words and storing them to PermData:{path}.")
-    if do.PermData.exists(path):
+    if co.PermData.exists(path):
         if force:
             print("PermData already populated, but 'force' is set. Regenerating.")
         else:
@@ -70,40 +99,40 @@ def gen_data(count: int, path: str, force=do.env_bool("FORCE")):
 
     words = random.choices(words_filtered, k=count)
     text = b"\n".join(words) + b"\n"
-    do.PermData.puts(path, text)
+    co.PermData.puts(path, text)
     print(f"Saved {count} words to PermData:{path}")
 
 
-def parallelize(input_path, temp_dir, top: int, chunksize: int) -> do.Parallel:
+def parallelize(input_path, temp_dir, top: int, chunksize: int) -> co.Parallel:
     """
-    Parallelize over the data at `input_path`, generating a "do_chunk(top)" command for
+    Parallelize over the data at `input_path`, generating a "process_chunk(top)" command for
     each `chunksize` words. Store the temporary output in `temp_dir`.
     """
-    output = do.Parallel()
-    data_size = do.PermData.size(input_path)
+    output = co.Parallel()
+    data_size = co.PermData.size(input_path)
     # Each line is a word padded to MAX_SIZE characters, plus a "\n"
     num_chunks = math.ceil(data_size / (MAX_SIZE + 1) / chunksize)
     for i in range(num_chunks):
         start = i * (MAX_SIZE + 1) * chunksize
         end = (i + 1) * (MAX_SIZE + 1) * chunksize
-        output[f"Chunk-{i}"] = do.lazy_py(
-            do_chunk, input_path, temp_dir, top=top, start=start, end=end
+        output[f"Chunk-{i}"] = co.lazy_py(
+            process_chunk, input_path, temp_dir, top=top, start=start, end=end
         )
     return output
 
 
-def do_chunk(input_path, temp_dir, top: int, start: int, end: int):
+def process_chunk(input_path, temp_dir, top: int, start: int, end: int):
     """
     Count the `top` words from the assigned chunk of `input_path`, saving the data in
     `temp_dir`.
     """
-    text = do.PermData.gets(input_path, byte_range=[start, end]).decode()
+    text = co.PermData.gets(input_path, byte_range=[start, end]).decode()
     words = [l.strip() for l in text.splitlines()]
     print(f"Got {len(words)} words")
     most = collections.Counter(words).most_common(top)
     text = json.dumps(most).encode()
     path = f"{temp_dir}/{start}"
-    do.TempData.puts(path, text)
+    co.TempData.puts(path, text)
     print(f"Wrote to {path}")
     for rank, (word, count) in enumerate(most):
         print(f"#{rank} -- {word} -- {count}")
@@ -113,11 +142,11 @@ def summarize(temp_dir, top: int):
     """
     Summarize all the files in `temp_dir` and return the `top` most common words.
     """
-    objs = do.TempData.list(temp_dir)
+    objs = co.TempData.list(temp_dir)
     summary = collections.Counter()
     for i, obj in enumerate(objs):
         print(f"[{i}/{len(objs)}] Reading {obj}", flush=True)
-        text = do.TempData.gets(obj).decode()
+        text = co.TempData.gets(obj).decode()
         for word, count in json.loads(text):
             summary[word] += count
 
@@ -131,4 +160,4 @@ def summarize(temp_dir, top: int):
 
 
 if __name__ == "__main__":
-    do.main(default=run)
+    co.main(default=run)
