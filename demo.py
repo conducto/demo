@@ -47,7 +47,7 @@ def run() -> co.Parallel:
     output["Dealing with errors"] = errors.run()
     output["Use case: parallel data processing"] = node = co.lazy_py(data.run)
     node.doc = data.__doc__
-    output["Use case: basic CI+CD pipeline"] = node = co.lazy_py(testing.run)
+    output["Use case: CI+CD testing"] = node = co.lazy_py(testing.run)
     node.doc = testing.__doc__
 
     for name, node in output.children.items():
