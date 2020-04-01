@@ -109,10 +109,12 @@ comes in handy when your
     if True:
         raise Exception("Code error!")
     else:
-        print("""
+        print(
+            """
     Great job using Debug (live). You fixed the code, now you must get your fix into the
     pipeline. Click the 'Rebuild Image' button in the Node panel to rebuild the Docker image
-    for this node with your latest code. Reset the error and now it will pass.""".strip())
+    for this node with your latest code. Reset the error and now it will pass.""".strip()
+        )
 
 
 def test_backend():

@@ -29,11 +29,78 @@ Load and combine all of them to find aggregate statistics on the whole dataset.
 
 ## TempData and PermData
 There are many, many ways to store data: databases, file systems, in-memory caches, or
-key/value stores, just to name a few. Conducto is a low-level platform that supports all
-of them by letting you import your own libraries and write your own code.
+key/value stores, just to name a few. If you already have data in one of these systems,
+in Conducto you are free to import your own libraries and write your own connective
+code.
 
-Conducto makes your
-  
+If you don't have a storage system yet, Conducto provides a simple key/value store. In
+local mode it is backed by your local disk, and in cloud mode it uses Amazon S3 for
+unlimited scalability.
+
+Objects in `co.PermData` persist across pipelines, while those in `co.TempData` are only
+visible to the current pipeline, and are deleted when the logs are.
+
+There are several uses of TempData and PermData in this example:
+- **Generate data** calls `co.PermData.exists` to avoid regenerating the wordlist, and
+ `co.PermData.puts` to save the wordlist if it generated one.
+- **Parallelize** calls `co.PermData.size` to calculate how partition the wordlist.
+- **Process chunks** calls `co.PermData.gets` to read a chunk of the wordlist, and
+  passes a byte range to only read the selected portion. It then calls
+  `co.TempData.puts` to store its aggregated statistics.
+- **Summarize** calls `co.TempData.list` to find all the intermediate results, and
+  `co.TempData.gets` to read them. Note, by using `list` to only analyze the objects
+  that exist, Summarize is not dependent on every Process Chunk step completing
+  successfully. If any chunks have errors, we can skip them and Summarize will work
+  correctly.
+
+See the [Conducto docs]](https://conducto.com/docs/#tempdata-and-permdata) for full
+details on all available methods.
+
+## co.lazy_py
+The [`lazy_py`](https://conducto.com/docs/#lazy-pipeline-creation) function takes any
+method call and packages it as a node.
+- For most methods that means an Exec node that runs it. For example, see "Generate
+  Data" in this node.
+- For methods whose return value is type-hinted to be a Serial or Parallel node,
+  it returns a pair of nodes. The first, 'Generate', runs the method and serializes the
+  returned node. That node is deserialized into the second, 'Execute', which then runs
+  it. For example, see "Parallel word count" in this node, or see how this entire node
+  is lazily generated.
+
+
+```python
+def gen_data(count: int, path: str):
+    ...
+
+def parallelize(input_path, temp_dir, top: int, chunksize: int) -> co.Parallel:
+    ...
+
+def summarize(temp_dir, top: int):
+    ...
+
+with co.Serial(image=utils.IMG, doc=__doc__) as output:
+    input_path = "conducto/demo_data"
+    temp_dir = "conducto/demo_data"
+
+    # Generate 5M random words. Returns an Exec node.
+    output["Generate data"] = co.lazy_py(
+        gen_data, count=5000000, path=input_path
+    )
+
+    # Parallelize over the input. Returns a Generate/Execute pair.
+    output["Parallel word count"] = co.lazy_py(
+        parallelize, input_path, temp_dir, top=15, chunksize=50 * 1000
+    )
+
+    # Aggregate the intermediate results. Returns an Exec node.
+    output["Summarize"] = co.lazy_py(summarize, temp_dir, top=15)
+```
+
+Look at how arguments are passed to each step. Methods take simple parameters, like
+`str`s or `int`s, which are serialized/deserialized according to their type hints. Note
+that instead of passing large amounts of data through Conducto, that data is saved to
+TempData/PermData and paths to it are passed.
+
 """
 import conducto as co
 import collections, json, math, os, random
