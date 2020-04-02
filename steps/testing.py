@@ -5,13 +5,13 @@
 - Define the image for your nodes.
 - Specify nodes to run in a single container.
 - Allow nodes to run Docker commands.
-- Implement a try/finally to ensure that cleanup nodes run.
+- Implement a try/finally to ensure that cleanup nodes always run.
 
 ## CI/CD pipelines
 Continuous Integration, Continuous Delivery (CI/CD) pipelines can take many forms, but
 typically all include some basic steps: Build, Test, Deploy. Implementing this at a high
 level should be familiar if you have seen the previous steps, so this use cases focuses
-on a low-level portion of a CI/CD pipeline, testing a microservice.
+on a low-level portion of a CI/CD pipeline - testing a microservice.
 
 This example deploys and tests a containerized Redis server in three steps:
 - 'Setup' starts the container.
@@ -26,42 +26,74 @@ much more to the world than just Python and Bash. Conducto lets you specify the 
 image for your Exec nodes in a variety of ways, making it easy to run any command you
 need.
 
-In case you're unfamiliar with the concept, a Docker image is a template for an
+In case you're unfamiliar with the concept, a Docker _image_ is a template for an
 execution environment that defines the base OS and file system contents, which often
-include programming languages, packages, and user code. A Docker container is a running
-instantiation of a Docker image. It is like a Virtual Machine, but a container is more
-lightweight and faster to create/destroy then a VM.
+include programming languages, packages, and user code. A _container_ is a running
+instantiation of an _image_. A _container_ is like a Virtual Machine (VM), but more
+lightweight and faster to create/destroy than a VM. You can create your own images,
+or use one of the many publicly available images from [Docker Hub](https://hub.docker.com)
+or another registry. For more information, check out a few of the many intros and
+tutorials to Docker and containers online.
 
-Every Exec node needs to have an `image` defined. The default image is Docker's standard
-`python` of the same version you're using.
-[`co.Image`](https://conducto.com/docs/#do-image) provides a few common ways to
-customize it by setting `co.Exec("...", image=co.Image(...))`.
-- **Novice** `co.Image("python:3.8", context=".", reqs_py=["numpy"])`: Start with the Docker image
-  `python:3.8`. Include all the code at `.`, that is, in the same directory as this
-  file. Then `pip install numpy`. This is easiest to use if you're unfamiliar with
-  Docker.
-  - `co.Image("python:3.8", context_url="...", context_branch="..."): Same behavior as
-    above, but includes code from the git repo at `context_url`. This is very useful for
-    CI/CD, as it lets you run code from a specific commit. More to come on this topic in a
-    later demo step.
-- **Intermediate** `co.Image(dockerfile="../Dockerfile"): Specify a custom Dockerfile,
-  which Conducto will build automatically. This method is used by this node; see "Show
-  dockerfile" for more details.
-- **Advanced** `co.Image("my_custom_image")`: If you are already a Docker expert and
-  already have your own images built, specify it here.
+Every Exec node needs to have an `image` defined. If unspecified, the default image is
+the standard `python` image with the same version as your local python installation.
+To override the default, you can specify a [`co.Image`](https://conducto.com/docs/#do-image)
+object, to any node like this: `co.Exec("...", image=co.Image(...))`.
 
-All but the last one support the "Rebuild Image" debugging functionality. Only the first
-one supports the "Conducto debug (live)" functionality.
+- **Easy**  
+    `co.Image("python:3.8", context=".", reqs_py=["numpy"])`  
+    Start with the Docker image `python:3.8`. Include all the code at `.`, that is,
+    in the same directory as this file. Then `pip install numpy`. This is easiest to
+    use if you're unfamiliar with Docker.
 
-## Docker from Exec nodes
-Select this node's child named "Setup" for more information on running Docker from Exec
-nodes.
+- **Easy + git**  
+    `co.Image("python:3.8", context_url="...", context_branch="...")`  
+    Same behavior as above, but includes a checkout of the branch `context_branch`
+    from the git repo at `context_url`. This is very useful for CI/CD, as it lets you
+    run code from a specific branch. More to come on this topic in a later demo step.
+
+- **Intermediate**  
+    `co.Image(dockerfile="../Dockerfile")`  
+    Specify a custom Dockerfile, which Conducto will build automatically. This is the
+    method we use in this node; see "Show dockerfile" for more details. Note that you
+    may specify `context`, `context_url` + `context_branch`, or `context_map`.
+
+- **Intermediate with `context_map`**  
+    `co.Image(dockerfile="../Dockerfile", context_map="/local/path:/container/path")`  
+    Same as above, but with `context_map` specified to enable live debugging.
+
+- **Do it yourself**  
+    `co.Image("my_custom_image")`  
+    If you are already fluent in Docker and have your own image built, specify it here.
+    Note that you may specify `context`, `context_url` + `context_branch`, or `context_map`.
+
+### A note on debugging
+
+You were introduced to the "Debug" and "Rebuild Image" functionality in the earlier
+"Dealing with errors" node. In light of the `image` discussion above, here is a further
+discussion of those tools.
+
+- Snaphot debugging will work with every flavor of `image` specification.
+
+- Live debugging mounts the context from your local machine, so local edits are visible
+  to the debug container; this will only work when `context` or `context_map` is specified.
+
+- "Rebuild Image" works anytime conducto is responsible for building a Docker image,
+  which is anytime that `context`, `context_url` + `context_branch`, or `dockerfile`
+  are specified.
+
+## Docker in Exec nodes
+
+If you need to run a docker command in an Exec node, you must specify the `requires_docker`
+parameter. Select the child node "Setup" for more information.
 
 ## Container
-Visit "Test" for more information on how Exec nodes use Containers.
+
+Visit "Test" for more information on how Exec nodes use containers.
 
 ## Try/finally
-Look at "Stop" to learn how to ensure that cleanup steps shall always run, regardless of
+
+Look at "Stop" to learn how to ensure that cleanup steps always run, regardless of
 previous errors.
 """
 import conducto as co
@@ -75,19 +107,20 @@ except ImportError:
 
 
 SETUP_DOC = """
-# Docker from Exec nodes
-Docker is not recursive and does not support containers-within-containers. Enabling Exec
-nodes to run Docker commands incurs additional overhead so Conducto leaves this feature
-disabled by default.
+# Docker in Exec nodes
+Docker does not trivially support containers-within-containers (also called
+Docker-in-Docker). Enabling Exec nodes to run Docker commands incurs additional
+overhead so Conducto leaves this feature disabled by default. To enable it, specify
+`requires_docker=True`.
 
-In this setup step we start a containerized Redis server. To enable this, we run
-`co.Exec("...", requires_docker=True)`. Easy.
+In this node we start a containerized Redis server, which requires enabling Docker,
+like this: `co.Exec("...", requires_docker=True)`. Easy.
 """
 
 TEST_DOC = """
 # Containers
 
-Each Exec node runs in a container, but sometimes multiple Exec nodes may share a single
+Each Exec node runs in a container, but multiple Exec nodes may share a single
 container. Conducto provides a few modes for controlling this behavior.
 
 ## Default: each Exec node usually gets its own container
@@ -96,20 +129,19 @@ may reuse a container - if one Exec node finishes and another in the queue is co
 with the now-available container, Conducto will assign one from the queue to the
 container.
 
-If you expect all your Exec nodes to run independently and not to destructive modify the
-state of their container, this is a great default choice.
+If you expect each Exec node to run independently and not destructively modify the
+state of its container, this is a great default choice.
 
 ## Run Exec nodes in a single container
 Cases do exist where you want to build up local state over the course of a few nodes.
-This test, for example, starts by installing redis for Python into the container, then
-uses the newly installed package to read and write data to a redis-server. These steps
-must all run in the same container, or else the read & write steps will not have the
-redis package installed.
+This test, for example, starts by installing the python redis package into the container,
+then uses the newly installed package to read and write data to a redis-server. These steps
+must all run in the same container, or else the read & write steps would not be able to
+see the redis package.
 
-To instruct Conducto that these nodes must share a container, set 
-`same_container=co.SameContainer.NEW` - create a new "same container" context. All
-child nodes below this that have the default of `co.SameContainer.INHERIT` will share
-this container.
+To instruct Conducto that these nodes must share a container, create a new "same container"
+context: `same_container=co.SameContainer.NEW`. All child nodes below this that have the
+default of `same_container=co.SameContainer.INHERIT` will share this container.
 
 ```python
 with co.Serial(same_container=co.SameContainer.NEW) as test:
@@ -118,14 +150,13 @@ with co.Serial(same_container=co.SameContainer.NEW) as test:
     test["Read"] = co.Exec("...")
 ```
 
-Another use of `SameContainer.NEW` is to start a server inside the Exec node's container
-in one Exec node, and then run a test against it from the next Exec node. You could
-instead put these commands in a single Exec node, connected with `&&`. However,
-separating them into multiple Exec nodes improves clarity by giving you separate outputs
-for each command, making debugging easier.
+Another use of `SameContainer.NEW` is to start a server in one Exec node, and then run a
+test against it in the next Exec node. Alternatively, you could put these commands in a
+single Exec node, connected with `&&`. But, separating them into multiple Exec nodes
+improves clarity by giving you separate outputs for each command, making debugging easier.
 
-Note: you can also use this if you just want to disable container reuse and ensure that
-each Exec node gets its own container. 
+Note: you can also use this feature if you simply want to disable container reuse and ensure
+that each Exec node gets its own container. 
 """
 ## TODO: Add doc for SameContainer.ESCAPE
 # Exit the same-container context to give Exec nodes their own containers
@@ -136,7 +167,7 @@ By default, Serial nodes stop upon any of their child nodes failing. Disabling t
 behavior can be helpful for ensuring that a cleanup node will always run.
 
 In this example, Teardown will always run, even if Setup or Test fail, similar to
-Python's try/finally blocks.
+a try/finally block in Python.
 ```python
 with co.Serial(stop_on_error=False) as output:
     with co.Serial(name="Setup and test"):
