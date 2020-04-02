@@ -8,10 +8,10 @@
 - Unskip nodes
 
 ## `co.Exec`
-Exec nodes run a shell command inside a container. This pipeline runs an example build
-step. Exec nodes are leaf nodes and have no children.
+Exec nodes run a shell command inside a container. They are leaf nodes and have
+no children. This pipeline runs a sample build command.
 ```python
-build_node = co.Exec("<your command here>")
+build_node = co.Exec("<your build command here: make ...>")
 ```
 
 ### Node panel
@@ -23,11 +23,11 @@ to see their commands, parameters, and outputs.
 The **Execution Parameters** display the settings that define this node's
 [execution environment](https://conducto.com/docs/#node-methods-and-attributes).
 
-**Stdout** and **stderr* show the output of the command, updating in real-time as it
+**Stdout** and **stderr** show the output of the command, updating in real-time as it
 runs.
 
 ## `co.Parallel`
-Parallel nodes have children that they run in parallel. This pipeline uses `co.Parallel`
+Parallel nodes have children that run in parallel. This pipeline uses `co.Parallel`
 to run example tests in parallel.
 ```python
 test_node = co.Parallel()
@@ -36,7 +36,7 @@ for name in ["app", "backend", "metrics"]:
 ```
 
 ## `co.Serial`
-Serial nodes have children that they run one after another, stopping if any child
+Serial nodes have children that run one after another, stopping if any child
 errors.
 ```python
 pipeline = co.Serial(image=utils.IMG, doc=__doc__)

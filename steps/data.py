@@ -53,19 +53,19 @@ There are several uses of TempData and PermData in this example:
   successfully. If any chunks have errors, we can skip them and Summarize will work
   correctly.
 
-See the [Conducto docs]](https://conducto.com/docs/#tempdata-and-permdata) for full
+See the [Conducto docs](https://conducto.com/docs/#tempdata-and-permdata) for full
 details on all available methods.
 
 ## co.lazy_py
 The [`lazy_py`](https://conducto.com/docs/#lazy-pipeline-creation) function takes any
-method call and packages it as a node.
-- For most methods that means an Exec node that runs it. For example, see "Generate
+function call and packages it as a node.
+- For most functions that means an Exec node that runs it. For example, see "Generate
   Data" in this node.
-- For methods whose return value is type-hinted to be a Serial or Parallel node,
-  it returns a pair of nodes. The first, 'Generate', runs the method and serializes the
-  returned node. That node is deserialized into the second, 'Execute', which then runs
-  it. For example, see "Parallel word count" in this node, or see how this entire node
-  is lazily generated.
+- For functions whose return value is type-hinted to be a Serial or Parallel node,
+  it returns a pair of nodes. The first node, 'Generate', runs the function and serializes the
+  returned node. That node is deserialized into the second node, 'Execute', which then runs
+  it. For example, see "Parallel word count" in this node, or see how the example node
+  below is lazily generated.
 
 
 ```python
@@ -98,8 +98,8 @@ with co.Serial(image=utils.IMG, doc=__doc__) as output:
 
 Look at how arguments are passed to each step. Methods take simple parameters, like
 `str`s or `int`s, which are serialized/deserialized according to their type hints. Note
-that instead of passing large amounts of data through Conducto, that data is saved to
-TempData/PermData and paths to it are passed.
+that instead of passing large amounts of data through Conducto, the data is saved to
+TempData/PermData and paths to it are passed around.
 
 """
 import conducto as co

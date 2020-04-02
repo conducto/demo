@@ -8,7 +8,7 @@
 - Skip nodes to ignore errors.
 
 ## Motivation
-Debugging errors in big pipelines is usually a terrible experience. Typically you get an
+Debugging errors in big pipelines is usually a terrible experience. You might get an
 email that a failure happened, with an error summary that is devoid of context. Then you
 have to scan through many dispersed logs to figure out what happened. There is always a
 struggle to reproduce the error. Testing your fix is never easy. Lastly you restart the
@@ -18,7 +18,7 @@ We know your pain. We've been there too. Conducto was specifically designed to m
 debugging easy so that you can create sophisticated pipelines that just work.
 
 ## Fast and easy debugging
-Run this node and you'll see three different errors in the Pipeline panel. Navigate to
+Run this node and you will see three different errors in the Pipeline panel. Navigate to
 them using your mouse or keyboard to expand the tree, or jump straight to it by clicking
 ![jump to next error](https://github.com/conducto/demo/raw/master/images/next_error.png).
 
@@ -60,7 +60,7 @@ def build():
 
 def test_app():
     """
-# Error #1: A bug that needs a code fix.
+# Error #1: Bug that needs a code fix.
 
 **Topics learned**
 - Conducto debug.
@@ -81,29 +81,28 @@ Think about that for a second. Exec nodes run in containers, so you now have the
 then you can be very confident that it will work in the full pipeline.
 
 But wait, there's more. The code on your local machine is mounted read-only into
-this debug container. Make changes in your favorite editor and your commands in the
-container will see them seamlessly.
+this debug container. Make changes outside the container in your favorite editor
+and your edits will automatically be visible within the container.
 
 To fix the bug:
 - Open `demo/steps/errors.py` in your editor.
 - Search for `FIXME` and fix the bug.
 - Run `./conducto.cmd` and follow the instructions.
 
-### Debug - snapshot vs live
-There are two modes of `conducto debug`. **Live** mode will mount your code
+### Debug - live vs snapshot
+There are two modes of `conducto debug`. **Live** mode will mount your local code
 read-only into the container. As you saw above this allows you to use your own
-editor in your own codebase to insert print statements and breakpoints, or to test
-fixes. This will probably be your preferred mode.
+editor in your own codebase outside of the container to insert print statements and
+breakpoints, or to test fixes. This will probably be your preferred mode.
 
-Live mode is only available for nodes with a `do.Image` that:
-- Has `image` and `context` set, or
-- Has `dockerfile` and `context` set, with `copy_context` set to `True`.
-Only in these cases does Conducto know how to map the paths on your host to the ones
-inside the container.
+Live mode requires that Conducto knows how to map a path on your local host to a path
+inside the container. This is possible with any `do.Image` that specifies `context`
+or `context_map`. A `context` literally specifies a path on your local host that is
+copied into the image. A `context_map` explicitly maps a host path to a container path.
 
-**Snapshot** mode uses the exact code that is in the Node's Docker image. You will
-most often use this when your `do.Image` is not compatible with live mode. It also
-comes in handy when your
+**Snapshot** mode uses the exact code that is in the Node's Docker image. This is possible
+with any flavor of `do.Image`. You will most often use this when your `do.Image` is not 
+compatible with live mode.
     """
     # FIXME: Change this 'True' to 'False'. Yes, this error is trivial. You're welcome.
     if True:
@@ -119,11 +118,11 @@ comes in handy when your
 
 def test_backend():
     """
-# Error #2: Fixable by changing the environment or the command.
+# Error #2: Bug that requires changing the environment or command.
 
 Nodes often fail in ways that can be fixed by changing execution params. Maybe it didn't
-get enough memory. Maybe there was in a typo in a command. In this case the command
-needs a token passed in as an environment variable.
+get enough memory. Maybe there was in a typo in a command. In this specific case, the
+command is expecting an environment variable to be specified.
 
 To fix it:
 - Click ![Modify](https://github.com/conducto/demo/raw/master/images/modify.png) in the toolbar.
@@ -182,7 +181,7 @@ example:
 Press ![Skip](https://github.com/conducto/demo/raw/master/images/skip.png) to skip this one.
 
 Need to skip many errors at once? Expand the dropdown under Skip/Unskip and select
-Skip Errors to skip all errored node underneath the selected one(s).
+Skip Errors to skip all errored nodes underneath the selected one(s).
 """
     raise Exception("Error, missing data.")
 
