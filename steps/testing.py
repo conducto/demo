@@ -78,9 +78,9 @@ discussion of those tools.
 - Live debugging mounts the context from your local machine, so local edits are visible
   to the debug container; this will only work when `context` or `context_map` is specified.
 
-- "Rebuild Image" works anytime conducto is responsible for building a Docker image,
-  which is anytime that `context`, `context_url` + `context_branch`, or `dockerfile`
-  are specified.
+- "Rebuild Image" works whenever Conducto is responsible for building a Docker image,
+  which it does if `context`, `context_url` + `context_branch`, `reqs_py`, or
+  `dockerfile` are specified.
 
 ## Docker in Exec nodes
 
@@ -97,7 +97,6 @@ Look at "Stop" to learn how to ensure that cleanup steps always run, regardless 
 previous errors.
 """
 import conducto as co
-import os
 import subprocess
 
 try:
