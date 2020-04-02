@@ -18,10 +18,10 @@ the node types in the next step.
 Look at the first node, "Node types". Read its explanation and see if you can guess
 what it will do once you run it.
 
-When you're ready, click ![run](https://github.com/conducto/demo/raw/master/images/run.png)
+When you're ready, click "Run" ![Run](https://github.com/conducto/demo/raw/master/images/play_arrow-24px.svg?sanitize=true)
 to run the pipeline. Was your guess correct?
 
-As you go through the rest of the demo, note that the 'Run' button stayed depressed once
+As you go through the rest of the demo, note that the "Run" button stayed depressed once
 you clicked it. The pipeline will keep running nodes as you reset or unskip them. Try it
 out, it should feel nice and intuitive.
 """

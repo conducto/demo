@@ -19,8 +19,8 @@ debugging easy so that you can create sophisticated pipelines that just work.
 
 ## Fast and easy debugging
 Run this node and you will see three different errors in the Pipeline panel. Navigate to
-them using your mouse or keyboard to expand the tree, or jump straight to it by clicking
-![jump to next error](https://github.com/conducto/demo/raw/master/images/next_error.png).
+them using your mouse or keyboard to expand the tree, or jump straight to it by clicking "Next Error" 
+![Next Error](https://github.com/conducto/demo/raw/master/images/next_error-24px.svg?sanitize=true).
 
 Each of the three errors illustrates a common problem. Select them one at a time and
 follow their instructions to solve them.
@@ -69,8 +69,8 @@ def test_app():
 ## Conducto debug
 Run this node, and you'll see that the stderr shows a mysterious exception. When you
 see errors like this in the real world, your first step will often be to reproduce
-them in a debug environment. Conducto makes this easy. Click
-![Debug](https://github.com/conducto/demo/raw/master/images/debug_live.png) to copy a
+them in a debug environment. Conducto makes this easy. Click "Copy Debug Command" 
+![Copy Debug Command](https://github.com/conducto/demo/raw/master/images/bug_report-24px.svg?sanitize=true) to copy a
 command to your clipboard.
 
 Run the command, and Conducto drops you into a container with all the code and
@@ -125,9 +125,9 @@ get enough memory. Maybe there was in a typo in a command. In this specific case
 command is expecting an environment variable to be specified.
 
 To fix it:
-- Click ![Modify](https://github.com/conducto/demo/raw/master/images/modify.png) in the toolbar.
+- Click "Modify Params" ![Modify Params](https://github.com/conducto/demo/raw/master/images/tune-24px.svg?sanitize=true) in the toolbar.
 - Set `env` to be `{"AUTH_TOKEN":"abc123"}` (any string will do).
-- Click ![Reset](https://github.com/conducto/demo/raw/master/images/reset.png) in the toolbar.
+- Click "Reset Selected" ![Reset Selected](https://github.com/conducto/demo/raw/master/images/settings_backup_restore-24px.svg?sanitize=true) in the toolbar.
 
 ### Sidebar: Design pattern to manually approve config changes
 DevOps can often involve automated application of configurations. Very important
@@ -178,7 +178,7 @@ example:
   the dataset. Either way, you have enough features to build a good model, so skip
   the errors to move on to the next step in the pipeline.
 
-Press ![Skip](https://github.com/conducto/demo/raw/master/images/skip.png) to skip this one.
+Press "Skip" ![Skip](https://github.com/conducto/demo/raw/master/images/skip_next-24px.svg?sanitize=true) to skip this one.
 
 Need to skip many errors at once? Expand the dropdown under Skip/Unskip and select
 Skip Errors to skip all errored nodes underneath the selected one(s).

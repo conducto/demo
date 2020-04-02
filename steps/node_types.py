@@ -50,11 +50,11 @@ descendants of that node. This makes it easy to operate on a whole subtree, whet
 has one node or one million.
 
 # Run it
-Click ![run](https://github.com/conducto/demo/raw/master/images/run.png) to run the
+Click "Run" ![Run](https://github.com/conducto/demo/raw/master/images/play_arrow-24px.svg?sanitize=true) to run the
 pipeline.
 
 # Next step
-Select the next node (Dealing with errors) and ![unskip](https://github.com/conducto/demo/raw/master/images/unskip.png) it to continue.
+Select the next node (Dealing with errors) and "Unskip" ![Unskip](https://github.com/conducto/demo/raw/master/images/skip_previous-24px.svg?sanitize=true) it to continue.
 You can also right-click and select "Unskip" from the context menu.
 """
 import conducto as co
