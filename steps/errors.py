@@ -1,6 +1,4 @@
 """
-# Dealing with errors
-
 **Topics learned**
 - Find errors in the Pipeline panel, and examine them in the Node panel.
 - Interactively debug nodes using **conducto debug** (this is really cool!)
@@ -9,7 +7,7 @@
 
 ## Motivation
 Debugging errors in big pipelines is usually a terrible experience. You might get an
-email that a failure happened, with an error summary that is devoid of context. Then you
+email that a failure happened, with an error summary that is devoid of copy_dir. Then you
 have to scan through many dispersed logs to figure out what happened. There is always a
 struggle to reproduce the error. Testing your fix is never easy. Lastly you restart the
 pipeline and wait, hoping you don't get another error email.
@@ -60,7 +58,7 @@ def build():
 
 def test_app():
     """
-# Error #1: Bug that needs a code fix.
+## Error: Bug that needs a code fix.
 
 **Topics learned**
 - Conducto debug.
@@ -96,9 +94,9 @@ editor in your own codebase outside of the container to insert print statements 
 breakpoints, or to test fixes. This will probably be your preferred mode.
 
 Live mode requires that Conducto knows how to map a path on your local host to a path
-inside the container. This is possible with any `do.Image` that specifies `context`
-or `context_map`. A `context` literally specifies a path on your local host that is
-copied into the image. A `context_map` explicitly maps a host path to a container path.
+inside the container. This is possible with any `do.Image` that specifies `copy_dir`
+or `path_map`. A `copy_dir` literally specifies a path on your local host that is
+copied into the image. A `path_map` explicitly maps a host path to a container path.
 
 **Snapshot** mode uses the exact code that is in the Node's Docker image. This is possible
 with any flavor of `do.Image`. You will most often use this when your `do.Image` is not 
@@ -118,7 +116,7 @@ compatible with live mode.
 
 def test_backend():
     """
-# Error #2: Bug that requires changing the environment or command.
+## Error: Bug that requires changing the environment or command.
 
 Nodes often fail in ways that can be fixed by changing execution params. Maybe it didn't
 get enough memory. Maybe there was in a typo in a command. In this specific case, the
@@ -165,13 +163,13 @@ the environment variable `COMMIT=True`.
 
 def test_metrics():
     """
-# Error #3: An error that should be skipped, not fixed.
+## Error: Bug that should be skipped, not fixed.
 
 Many errors are insignificant and you can skip them without bothering to fix them. For
 example:
 - In a CI/CD pipeline, you have a transient failure in a unit test for code that you
-  didn't touch. Long term you should really fix that, but right now you just want to run
-  your tests, so skip the failure to move along.
+  didn't touch. Long term you should really fix that, but right now you need to run
+  later steps, so skip the failure to move along.
 - In a machine learning pipeline, you have 10,000 nodes that compute features on
   different input data. 9950 of them succeed, with 50 weird failures. Some of the
   failures should be fixed, but others represent bad data that should be excluded from

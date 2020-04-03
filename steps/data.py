@@ -1,6 +1,4 @@
 """
-# Use case: process data in parallel
-
 **Topics learned**
 - [`co.TempData` and `co.PermData`](https://conducto.com/docs/#tempdata-and-permdata)
   are key/value data stores. `TempData` is scoped to the current pipeline, and

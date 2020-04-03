@@ -34,9 +34,11 @@ except ImportError:
     from .steps import node_types, errors, utils, data, testing
 
 RUN_MSG = """
-Welcome to the Conducto demo. \033[31;1mIf this is your first time running Conducto, your jobs may
-be queued longer than you expect while Docker images download.\033[0m We are working on making
-this more transparent. Thanks for your patience!
+Welcome to the Conducto demo!
+
+\033[31;1mIf this is your first time running Conducto, your jobs may be queued longer than you
+expect while Docker images download.\033[0m We are working on making this more transparent.
+Thanks for your patience.
 """.strip()
 
 

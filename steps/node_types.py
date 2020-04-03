@@ -1,6 +1,4 @@
 """
-# Node types
-
 **Topics learned**
 - Exec, Parallel, and Serial nodes
 - Node panel
@@ -49,11 +47,11 @@ Note that this example's `image` is defined on the Serial node and is inherited 
 descendants of that node. This makes it easy to operate on a whole subtree, whether it
 has one node or one million.
 
-# Run it
+## Run it
 Click "Run" ![Run](https://github.com/conducto/demo/raw/master/images/play_arrow-24px.svg?sanitize=true) to run the
 pipeline.
 
-# Next step
+## Next step
 Select the next node (Dealing with errors) and "Unskip" ![Unskip](https://github.com/conducto/demo/raw/master/images/skip_previous-24px.svg?sanitize=true) it to continue.
 You can also right-click and select "Unskip" from the context menu.
 """
