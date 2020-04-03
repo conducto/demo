@@ -1,6 +1,4 @@
 """
-# Use case: CI+CD testing
-
 **Topics learned**
 - Define the image for your nodes.
 - Specify nodes to run in a single container.
@@ -41,31 +39,36 @@ To override the default, you can specify a [`co.Image`](https://conducto.com/doc
 object, to any node like this: `co.Exec("...", image=co.Image(...))`.
 
 - **Easy**  
-    `co.Image("python:3.8", context=".", reqs_py=["numpy"])`  
+    `co.Image("python:3.8", copy_dir=".", reqs_py=["numpy"])`
     Start with the Docker image `python:3.8`. Include all the code at `.`, that is,
     in the same directory as this file. Then `pip install numpy`. This is easiest to
     use if you're unfamiliar with Docker.
 
 - **Easy + git**  
-    `co.Image("python:3.8", context_url="...", context_branch="...")`  
-    Same behavior as above, but includes a checkout of the branch `context_branch`
-    from the git repo at `context_url`. This is very useful for CI/CD, as it lets you
+    `co.Image("python:3.8", copy_url="...", copy_branch="...")`
+    Same behavior as above, but includes a checkout of the branch `copy_branch`
+    from the git repo at `copy_url`. This is very useful for CI/CD, as it lets you
     run code from a specific branch. More to come on this topic in a later demo step.
 
-- **Intermediate**  
-    `co.Image(dockerfile="../Dockerfile")`  
+- **Intermediate**
+    `co.Image(dockerfile="../Dockerfile", context="..")`
     Specify a custom Dockerfile, which Conducto will build automatically. This is the
     method we use in this node; see "Show dockerfile" for more details. Note that you
-    may specify `context`, `context_url` + `context_branch`, or `context_map`.
+    may still specify `copy_dir`, or `copy_url` + `copy_branch` to add local code to
+    the image.
 
-- **Intermediate with `context_map`**  
-    `co.Image(dockerfile="../Dockerfile", context_map="/local/path:/container/path")`  
-    Same as above, but with `context_map` specified to enable live debugging.
+    Use `context` to specify the context for the `docker build` command. If unspecified,
+    it will be the directory that contains the Dockerfile.
+
+- **Intermediate + `path_map`**
+    `co.Image(dockerfile="../Dockerfile", context="..", path_map={"/local/path":"/container/path"})`
+    Same as above, but with `path_map` specified to enable live debugging.
 
 - **Do it yourself**  
     `co.Image("my_custom_image")`  
     If you are already fluent in Docker and have your own image built, specify it here.
-    Note that you may specify `context`, `context_url` + `context_branch`, or `context_map`.
+    Note that you may specify `copy_dir` or `copy_url` + `copy_branch` to add local code
+    to the image. You may also specify `path_map` to enable live debugging.
 
 ### A note on debugging
 
@@ -75,16 +78,17 @@ discussion of those tools.
 
 - Snaphot debugging will work with every flavor of `image` specification.
 
-- Live debugging mounts the context from your local machine, so local edits are visible
-  to the debug container; this will only work when `context` or `context_map` is specified.
+- Live debugging mounts the copy_dir from your local machine, so local edits are visible
+  to the debug container; this will only work when `copy_dir` or `path_map` is
+  specified.
 
 - "Rebuild Image" works whenever Conducto is responsible for building a Docker image,
-  which it does if `context`, `context_url` + `context_branch`, `reqs_py`, or
+  which it does if `copy_dir`, `copy_url` + `copy_branch`, `reqs_py`, or
   `dockerfile` are specified.
 
 ## Docker in Exec nodes
 
-If you need to run a docker command in an Exec node, you must specify the `requires_docker`
+If you need to run a Docker command in an Exec node, you must specify the `requires_docker`
 parameter. Select the child node "Setup" for more information.
 
 ## Container
@@ -105,8 +109,44 @@ except ImportError:
     from . import utils
 
 
+DOCKERFILE_DOC = """
+## Using `co.Image(dockerfile='...')`
+This example uses a single image with both Docker and python. It also must include the
+code from this directory as well as the 'conducto' python package.
+
+There are many ways to achieve this goal, and we break it down into two parts:
+1. There is no default image on DockerHub that contains both Docker and python, so we
+   made this dockerfile that does nothing except for combining them.
+2. Use existing `co.Image` functionality to include local files and install python
+   libraries.
+
+The image definition is  
+`co.Image(dockerfile="Dockerfile-testing", copy_dir=".", reqs_py=["conducto"])`
+
+Conducto runs `docker build` on `Dockerfile-testing`, whose contents are printed below.
+It then runs another Docker command that copies the `copy_dir` and installs conducto.
+
+## Alternative: copy manually and use `path_map`
+There is no single correct way to do this. We could instead write the `copy` and
+`pip install` commands inside this Dockerfile:
+
+```docker
+# Install conducto
+RUN pip install conducto
+
+# Copy everything from the build context into /path/to/code
+COPY . /path/to/code
+```
+
+The image would be correct, but both `do.lazy_py` and live debugging would break because
+they would not know how to find the code inside the container.
+
+We can tell Conducto how to find it by specifying `path_map`:  
+`co.Image(..., path_map={".":"/path/to/code"})`
+"""
+
 SETUP_DOC = """
-# Docker in Exec nodes
+## Docker in Exec nodes
 Docker does not trivially support containers-within-containers (also called
 Docker-in-Docker). Enabling Exec nodes to run Docker commands incurs additional
 overhead so Conducto leaves this feature disabled by default. To enable it, specify
@@ -117,12 +157,12 @@ like this: `co.Exec("...", requires_docker=True)`. Easy.
 """
 
 TEST_DOC = """
-# Containers
+## Containers
 
 Each Exec node runs in a container, but multiple Exec nodes may share a single
 container. Conducto provides a few modes for controlling this behavior.
 
-## Default: each Exec node usually gets its own container
+### Default: each Exec node usually gets its own container
 Normally, Conducto runs each Exec node in its own container. For efficiency reasons it
 may reuse a container - if one Exec node finishes and another in the queue is compatible
 with the now-available container, Conducto will assign one from the queue to the
@@ -131,7 +171,7 @@ container.
 If you expect each Exec node to run independently and not destructively modify the
 state of its container, this is a great default choice.
 
-## Run Exec nodes in a single container
+### Run Exec nodes in a single container
 Cases do exist where you want to build up local state over the course of a few nodes.
 This test, for example, starts by installing the python redis package into the container,
 then uses the newly installed package to read and write data to a redis-server. These steps
@@ -139,7 +179,7 @@ must all run in the same container, or else the read & write steps would not be 
 see the redis package.
 
 To instruct Conducto that these nodes must share a container, create a new "same container"
-context: `same_container=co.SameContainer.NEW`. All child nodes below this that have the
+copy_dir: `same_container=co.SameContainer.NEW`. All child nodes below this that have the
 default of `same_container=co.SameContainer.INHERIT` will share this container.
 
 ```python
@@ -161,7 +201,7 @@ that each Exec node gets its own container.
 # Exit the same-container context to give Exec nodes their own containers
 
 STOP_DOC = """
-# Try/finally
+## Try/finally
 By default, Serial nodes stop upon any of their child nodes failing. Disabling this
 behavior can be helpful for ensuring that a cleanup node will always run.
 
@@ -178,15 +218,17 @@ with co.Serial(stop_on_error=False) as output:
 
 
 def run() -> co.Serial:
-    print(f"<ConductoMarkdown>{__doc__}</" "ConductoMarkdown>")
     output = co.Serial(
-        image=co.Image(dockerfile="Dockerfile-testing"),
+        image=co.Image(
+            dockerfile="Dockerfile-testing", copy_dir=".", reqs_py=["conducto"]
+        ),
         stop_on_error=False,
         doc=__doc__,
     )
-    output["Show dockerfile"] = co.lazy_py(
+    output["Show dockerfile"] = node = co.lazy_py(
         utils.print_source, co.relpath("Dockerfile-testing")
     )
+    node.doc = DOCKERFILE_DOC
 
     output["Setup"] = co.Exec(
         "docker run -p 6379:6379 -d --rm --name conducto_demo_redis redis:alpine",

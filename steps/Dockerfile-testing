@@ -1,16 +1,7 @@
+# Make one image that includes both Python and Docker
+
 # Start with a standard Python image as a base
 FROM python:3.8-alpine
 
 # Install docker
 RUN apk update && apk add docker
-
-# Install conducto
-RUN pip install --upgrade pip conducto
-
-# Copy all the code from the build context directory into the image,
-# located at /usr/conducto-demo
-WORKDIR /usr/conducto-demo
-COPY . .
-
-# Set a default command. Not always necessary, but good practice.
-CMD ["/bin/bash"]
