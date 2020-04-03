@@ -85,7 +85,7 @@ and your edits will automatically be visible within the container.
 To fix the bug:
 - Open `demo/steps/errors.py` in your editor.
 - Search for `FIXME` and fix the bug.
-- Run `./conducto.cmd` and follow the instructions.
+- Run `/conducto.cmd` and follow the instructions.
 
 ### Debug - live vs snapshot
 There are two modes of `conducto debug`. **Live** mode will mount your local code

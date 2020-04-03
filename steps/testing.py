@@ -179,7 +179,7 @@ must all run in the same container, or else the read & write steps would not be 
 see the redis package.
 
 To instruct Conducto that these nodes must share a container, create a new "same container"
-copy_dir: `same_container=co.SameContainer.NEW`. All child nodes below this that have the
+context: `same_container=co.SameContainer.NEW`. All child nodes below this that have the
 default of `same_container=co.SameContainer.INHERIT` will share this container.
 
 ```python
