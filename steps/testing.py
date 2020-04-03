@@ -39,19 +39,19 @@ To override the default, you can specify a [`co.Image`](https://conducto.com/doc
 object, to any node like this: `co.Exec("...", image=co.Image(...))`.
 
 - **Easy**  
-    `co.Image("python:3.8", copy_dir=".", reqs_py=["numpy"])`
+    `co.Image("python:3.8", copy_dir=".", reqs_py=["numpy"])`  
     Start with the Docker image `python:3.8`. Include all the code at `.`, that is,
     in the same directory as this file. Then `pip install numpy`. This is easiest to
     use if you're unfamiliar with Docker.
 
 - **Easy + git**  
-    `co.Image("python:3.8", copy_url="...", copy_branch="...")`
+    `co.Image("python:3.8", copy_url="...", copy_branch="...")`  
     Same behavior as above, but includes a checkout of the branch `copy_branch`
     from the git repo at `copy_url`. This is very useful for CI/CD, as it lets you
     run code from a specific branch. More to come on this topic in a later demo step.
 
-- **Intermediate**
-    `co.Image(dockerfile="../Dockerfile", context="..")`
+- **Intermediate**  
+    `co.Image(dockerfile="../Dockerfile", context="..")`  
     Specify a custom Dockerfile, which Conducto will build automatically. This is the
     method we use in this node; see "Show dockerfile" for more details. Note that you
     may still specify `copy_dir`, or `copy_url` + `copy_branch` to add local code to
@@ -60,8 +60,8 @@ object, to any node like this: `co.Exec("...", image=co.Image(...))`.
     Use `context` to specify the context for the `docker build` command. If unspecified,
     it will be the directory that contains the Dockerfile.
 
-- **Intermediate + `path_map`**
-    `co.Image(dockerfile="../Dockerfile", context="..", path_map={"/local/path":"/container/path"})`
+- **Intermediate + `path_map`**  
+    `co.Image(dockerfile="../Dockerfile", context="..", path_map={"/local/path":"/container/path"})`  
     Same as above, but with `path_map` specified to enable live debugging.
 
 - **Do it yourself**  
@@ -78,9 +78,9 @@ discussion of those tools.
 
 - Snaphot debugging will work with every flavor of `image` specification.
 
-- Live debugging mounts the copy_dir from your local machine, so local edits are visible
-  to the debug container; this will only work when `copy_dir` or `path_map` is
-  specified.
+- Live debugging mounts code from your local machine into the container, so local edits
+  are visible to the debug container; this will only work when `copy_dir` or `path_map`
+  is specified.
 
 - "Rebuild Image" works whenever Conducto is responsible for building a Docker image,
   which it does if `copy_dir`, `copy_url` + `copy_branch`, `reqs_py`, or
