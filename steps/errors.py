@@ -7,7 +7,7 @@
 
 ## Motivation
 Debugging errors in big pipelines is usually a terrible experience. You might get an
-email that a failure happened, with an error summary that is devoid of copy_dir. Then you
+email that a failure happened, with an error summary that is devoid of context. Then you
 have to scan through many dispersed logs to figure out what happened. There is always a
 struggle to reproduce the error. Testing your fix is never easy. Lastly you restart the
 pipeline and wait, hoping you don't get another error email.
