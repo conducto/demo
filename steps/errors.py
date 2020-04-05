@@ -135,7 +135,7 @@ A common Conducto pattern is to error if an important config does not match, and
 to commit the change when an environment variable is set. For example:
 
 ```python
-def deploy(commit=do.envbool("COMMIT")):
+def deploy(commit=co.envbool("COMMIT")):
     if config_is_different():
         print(diff_summary())
         if commit:
