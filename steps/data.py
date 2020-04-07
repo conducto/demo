@@ -1,8 +1,8 @@
 """
 **Topics learned**
-- [`co.TempData` and `co.PermData`](https://conducto.com/docs/#tempdata-and-permdata)
-  are key/value data stores. `TempData` is scoped to the current pipeline, and
-  `PermData` persists outside of it.
+- [`co.temp_data` and `co.perm_data`](https://conducto.com/docs/#temp-data-and-perm_data)
+  are key/value data stores. `temp_data` is scoped to the current pipeline, and
+  `perm_data` persists outside of it.
 - Lazily generate parts of the pipeline using [`co.lazy_py`](https://conducto.com/docs/#lazy-pipeline-creation)
   to parallelize over newly-generated data.
 
@@ -12,20 +12,20 @@ other purpose-built tools can solve this common example more succinctly, it illu
 how elegant Conducto's general approach can be. It encourages you to break the problem
 down into simple components that are easily coded, understood, visualized, and debugged.
 
-1. **Generate data**: This step ensures that a wordlist is contained in PermData. If
-  PermData already has the wordlist, exit quickly. Otherwise download a dictionary,
-  sample 5M random words, and save it to PermData.
-2. **Parallelize (aka "map")**: Analyze the contents of PermData and divide it into
+1. **Generate data**: This step ensures that a wordlist is contained in perm_data. If
+  perm_data already has the wordlist, exit quickly. Otherwise download a dictionary,
+  sample 5M random words, and save it to perm_data.
+2. **Parallelize (aka "map")**: Analyze the contents of perm_data and divide it into
   chunks, generating an Exec node to handle each chunk. This subtree cannot be created
   until the data has been generated, so it uses **do.lazy_py** to lazily create these
   nodes. More detail on this below.
 3. **Process chunks in parallel**: The word count problem is easily parallelizable, so
-  each Exec node reads in a specified chunk of data from the PermData, aggregates it,
-  and stores the results to TempData.
-4. **Summarize (aka "reduce")**: Look in TempData for all the chunk-by-chunk summaries.
+  each Exec node reads in a specified chunk of data from the perm_data, aggregates it,
+  and stores the results to temp_data.
+4. **Summarize (aka "reduce")**: Look in temp_data for all the chunk-by-chunk summaries.
 Load and combine all of them to find aggregate statistics on the whole dataset.
 
-## TempData and PermData
+## temp_data and perm_data
 There are many, many ways to store data: databases, file systems, in-memory caches, or
 key/value stores, just to name a few. If you already have data in one of these systems,
 in Conducto you are free to import your own libraries and write your own connective
@@ -35,23 +35,23 @@ If you don't have a storage system yet, Conducto provides a simple key/value sto
 local mode it is backed by your local disk, and in cloud mode it uses Amazon S3 for
 unlimited scalability.
 
-Objects in `co.PermData` persist across pipelines, while those in `co.TempData` are only
+Objects in `co.perm_data` persist across pipelines, while those in `co.temp_data` are only
 visible to the current pipeline, and are deleted when the logs are.
 
-There are several uses of TempData and PermData in this example:
-- **Generate data** calls `co.PermData.exists` to avoid regenerating the wordlist, and
- `co.PermData.puts` to save the wordlist if it generated one.
-- **Parallelize** calls `co.PermData.size` to calculate how partition the wordlist.
-- **Process chunks** calls `co.PermData.gets` to read a chunk of the wordlist, and
+There are several uses of temp_data and perm_data in this example:
+- **Generate data** calls `co.perm_data.exists` to avoid regenerating the wordlist, and
+ `co.perm_data.puts` to save the wordlist if it generated one.
+- **Parallelize** calls `co.perm_data.size` to calculate how partition the wordlist.
+- **Process chunks** calls `co.perm_data.gets` to read a chunk of the wordlist, and
   passes a byte range to only read the selected portion. It then calls
-  `co.TempData.puts` to store its aggregated statistics.
-- **Summarize** calls `co.TempData.list` to find all the intermediate results, and
-  `co.TempData.gets` to read them. Note, by using `list` to only analyze the objects
+  `co.temp_data.puts` to store its aggregated statistics.
+- **Summarize** calls `co.temp_data.list` to find all the intermediate results, and
+  `co.temp_data.gets` to read them. Note, by using `list` to only analyze the objects
   that exist, Summarize is not dependent on every Process Chunk step completing
   successfully. If any chunks have errors, we can skip them and Summarize will work
   correctly.
 
-See the [Conducto docs](https://conducto.com/docs/#tempdata-and-permdata) for full
+See the [Conducto docs](https://conducto.com/docs/#temp-data-and-perm_data) for full
 details on all available methods.
 
 ## co.lazy_py
@@ -97,7 +97,7 @@ with co.Serial(image=utils.IMG, doc=__doc__) as output:
 Look at how arguments are passed to each step. Methods take simple parameters, like
 `str`s or `int`s, which are serialized/deserialized according to their type hints. Note
 that instead of passing large amounts of data through Conducto, the data is saved to
-TempData/PermData and paths to it are passed around.
+temp_data/perm_data and paths to it are passed around.
 
 """
 import conducto as co
@@ -139,12 +139,12 @@ def gen_data(count: int, path: str, force=co.env_bool("FORCE")):
     """
     import urllib.request
 
-    print(f"Generating {count} words and storing them to PermData:{path}.")
-    if co.PermData.exists(path):
+    print(f"Generating {count} words and storing them to perm_data:{path}.")
+    if co.perm_data.exists(path):
         if force:
-            print("PermData already populated, but 'force' is set. Regenerating.")
+            print("perm_data already populated, but 'force' is set. Regenerating.")
         else:
-            print("PermData already populated. Skipping.")
+            print("perm_data already populated. Skipping.")
             print("To force regeneration, set environment variable FORCE=true.")
             return
 
@@ -164,8 +164,8 @@ def gen_data(count: int, path: str, force=co.env_bool("FORCE")):
 
     words = random.choices(words_filtered, k=count)
     text = b"\n".join(words) + b"\n"
-    co.PermData.puts(path, text)
-    print(f"Saved {count} words to PermData:{path}")
+    co.perm_data.puts(path, text)
+    print(f"Saved {count} words to perm_data:{path}")
 
 
 def parallelize(input_path, temp_dir, top: int, chunksize: int) -> co.Parallel:
@@ -174,7 +174,7 @@ def parallelize(input_path, temp_dir, top: int, chunksize: int) -> co.Parallel:
     each `chunksize` words. Store the temporary output in `temp_dir`.
     """
     output = co.Parallel()
-    data_size = co.PermData.size(input_path)
+    data_size = co.perm_data.size(input_path)
     # Each line is a word padded to MAX_SIZE characters, plus a "\n"
     num_chunks = math.ceil(data_size / (MAX_SIZE + 1) / chunksize)
     for i in range(num_chunks):
@@ -191,13 +191,13 @@ def process_chunk(input_path, temp_dir, top: int, start: int, end: int):
     Count the `top` words from the assigned chunk of `input_path`, saving the data in
     `temp_dir`.
     """
-    text = co.PermData.gets(input_path, byte_range=[start, end]).decode()
+    text = co.perm_data.gets(input_path, byte_range=[start, end]).decode()
     words = [l.strip() for l in text.splitlines()]
     print(f"Got {len(words)} words")
     most = collections.Counter(words).most_common(top)
     text = json.dumps(most).encode()
     path = f"{temp_dir}/{start}"
-    co.TempData.puts(path, text)
+    co.temp_data.puts(path, text)
     print(f"Wrote to {path}")
     for rank, (word, count) in enumerate(most):
         print(f"#{rank} -- {word} -- {count}")
@@ -207,11 +207,11 @@ def summarize(temp_dir, top: int):
     """
     Summarize all the files in `temp_dir` and return the `top` most common words.
     """
-    objs = co.TempData.list(temp_dir)
+    objs = co.temp_data.list(temp_dir)
     summary = collections.Counter()
     for i, obj in enumerate(objs):
         print(f"[{i}/{len(objs)}] Reading {obj}", flush=True)
-        text = co.TempData.gets(obj).decode()
+        text = co.temp_data.gets(obj).decode()
         for word, count in json.loads(text):
             summary[word] += count
 

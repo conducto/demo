@@ -45,7 +45,7 @@ We are working on making this more transparent. Thanks for your patience.
 def run() -> co.Parallel:
     print(RUN_MSG)
     output = co.Parallel(image=utils.IMG, doc=__doc__)
-    output["Node types"] = node = node_types.run()
+    output["Node types"] = node_types.run()
     output["Dealing with errors"] = errors.run()
     output["Use case: parallel data processing"] = node = co.lazy_py(data.run)
     node.doc = data.__doc__
