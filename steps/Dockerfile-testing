@@ -1,7 +1,0 @@
-# Make one image that includes both Python and Docker
-
-# Start with a standard Python image as a base
-FROM python:3.8-alpine
-
-# Install docker
-RUN apk update && apk add docker

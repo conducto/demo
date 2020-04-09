@@ -19,10 +19,8 @@ Click *Run* to get started and learn how to supercharge your CI/CD pipelines!
 """
 
 import conducto as co
-import first_pipeline
-import execution_env
-import env_secrets
-import data_stores
+import first_pipeline, execution_env, env_secrets, data_stores
+import node_params, error_resolution, extras
 
 
 def full_demo() -> co.Parallel:
@@ -34,6 +32,9 @@ def full_demo() -> co.Parallel:
         full["execution_env"] = execution_env.examples()
         full["env_secrets"] = env_secrets.examples()
         full["data_stores"] = data_stores.examples()
+        full["node_params"] = node_params.examples()
+        full["error_resolution"] = error_resolution.examples()
+        full["extras"] = extras.examples()
     return full
 
 

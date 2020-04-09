@@ -20,7 +20,6 @@ Live debug can be enabled with path_map:
 """
 
 import conducto as co
-from utils import magic_doc
 
 
 pretty_table_script = """
@@ -35,25 +34,29 @@ print(table)
 def existing_image() -> co.Exec:
     """Specify any existing image from Dockerhub or another image registry."""
     image = co.Image("node:lts-buster")
-    return co.Exec("npm help", image=image, doc=magic_doc())
+    return co.Exec("npm help", image=image, doc=co.util.magic_doc())
 
 
 def python_image_with_reqs_py() -> co.Exec:
     """Specify a python image and list requirements with `reqs_py`."""
     image = co.Image("python:3.8-alpine", reqs_py=["PTable"])
-    return co.Exec(f"python -c '{pretty_table_script}'", image=image, doc=magic_doc())
+    return co.Exec(
+        f"python -c '{pretty_table_script}'", image=image, doc=co.util.magic_doc()
+    )
 
 
 def dockerfile() -> co.Exec:
     """Specify a dockerfile for full flexibility in defining your image."""
     image = co.Image(dockerfile="./docker/Dockerfile.simple")
-    return co.Exec(f"python -c '{pretty_table_script}'", image=image, doc=magic_doc())
+    return co.Exec(
+        f"python -c '{pretty_table_script}'", image=image, doc=co.util.magic_doc()
+    )
 
 
 def copy_local_code() -> co.Exec:
     """Copy local code into your image with `copy_dir`."""
     image = co.Image("python:3.8-alpine", copy_dir="./code")
-    return co.Exec("python test.py", image=image, doc=magic_doc())
+    return co.Exec("python test.py", image=image, doc=co.util.magic_doc())
 
 
 def clone_from_git() -> co.Exec:
@@ -63,11 +66,9 @@ def clone_from_git() -> co.Exec:
     """
     git_url = "https://github.com/conducto/demo.git"
     image = co.Image(
-        dockerfile="./docker/Dockerfile.git",
-        copy_url=git_url,
-        copy_branch="master",
+        dockerfile="./docker/Dockerfile.git", copy_url=git_url, copy_branch="master",
     )
-    return co.Exec("python cicd/code/test.py", image=image, doc=magic_doc())
+    return co.Exec("python cicd/code/test.py", image=image, doc=co.util.magic_doc())
 
 
 def dockerfile_with_copy() -> co.Exec:
@@ -75,7 +76,7 @@ def dockerfile_with_copy() -> co.Exec:
     You can COPY or ADD files directly in your dockerfile.
     """
     image = co.Image(dockerfile="./docker/Dockerfile.copy", context=".")
-    return co.Exec("python /root/code/test.py", image=image, doc=magic_doc())
+    return co.Exec("python /root/code/test.py", image=image, doc=co.util.magic_doc())
 
 
 def clone_from_git_with_path_map() -> co.Exec:
@@ -93,7 +94,7 @@ def clone_from_git_with_path_map() -> co.Exec:
         copy_branch="master",
         path_map=path_map,
     )
-    return co.Exec("python cicd/code/test.py", image=image, doc=magic_doc())
+    return co.Exec("python cicd/code/test.py", image=image, doc=co.util.magic_doc())
 
 
 def dockerfile_with_path_map() -> co.Exec:
@@ -106,7 +107,7 @@ def dockerfile_with_path_map() -> co.Exec:
     image = co.Image(
         dockerfile="./docker/Dockerfile.copy", context=".", path_map=path_map
     )
-    return co.Exec("python /root/code/test.py", image=image, doc=magic_doc())
+    return co.Exec("python /root/code/test.py", image=image, doc=co.util.magic_doc())
 
 
 def examples() -> co.Parallel:

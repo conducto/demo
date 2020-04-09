@@ -9,7 +9,6 @@ Examples of how to specify:
 
 
 import conducto as co
-from utils import magic_doc
 
 
 def env_variables() -> co.Exec:
@@ -24,7 +23,7 @@ def env_variables() -> co.Exec:
     }
     image = co.Image("bash:5.0")
     command = "env | grep -e NUM_THREADS -e TEST_URL"
-    return co.Exec(command, env=env, image=image, doc=magic_doc())
+    return co.Exec(command, env=env, image=image, doc=co.util.magic_doc())
 
 
 def user_secrets() -> co.Exec:
@@ -45,7 +44,7 @@ def user_secrets() -> co.Exec:
 
     image = co.Image("bash:5.0")
     command = "env | grep -e DEMO_PASSWORD -e DEMO_SSN"
-    return co.Exec(command, image=image, doc=magic_doc())
+    return co.Exec(command, image=image, doc=co.util.magic_doc())
 
 
 def examples() -> co.Parallel:
