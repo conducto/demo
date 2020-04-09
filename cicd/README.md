@@ -1,7 +1,7 @@
 ### **Conducto CI/CD Demo**
 
-Welcome to our full CI/CD demo. To run the demo, you must first complete
-the getting started instructions for Linux, macOS, or Windows, which are
+Welcome to our CI/CD demo. To run the demo, you must first complete the
+getting started instructions for Linux, macOS, Windows, or WSL which are
 linked from our [Conducto for CI/CD](
 https://medium.com/conducto/getting-started-with-conducto-for-ci-cd-b6afb626f410)
 article.

@@ -1,5 +1,6 @@
 import collections, conducto as co, json, re
 
+
 # Data is downloaded from the United States Energy Information Administration.
 # https://www.eia.gov/opendata/bulkfiles.php
 
@@ -24,14 +25,14 @@ def run() -> co.Serial:
     """
     Pipeline that downloads data from the US EIA and visualizes it.
     """
-    with co.Serial(image=IMG) as output:
+    with co.Serial(image=IMG, doc=co.util.magic_doc()) as output:
         # First download some data from the US Energy Information Administration.
         output["Download"] = co.Exec(DOWNLOAD_COMMAND)
 
         # Then make a few different visualizations of it.
         output["Display"] = co.Parallel()
         for dataset in DATASETS.keys():
-            output["Display"][dataset] = co.Exec(f"python intro.py display --dataset='{dataset}'")
+            output["Display"][dataset] = co.Exec(f"python data_science.py display --dataset='{dataset}'")
     return output
 
 

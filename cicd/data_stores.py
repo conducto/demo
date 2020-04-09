@@ -10,7 +10,6 @@ How to store artifacts and intermediate results:
 
 
 import conducto as co
-from utils import magic_doc
 
 
 def redis_data_store() -> co.Exec:
@@ -34,7 +33,7 @@ def redis_data_store() -> co.Exec:
         "REDIS_PORT": "6379",
     }
     image = co.Image("python:3.8-alpine", copy_dir="./code", reqs_py=["redis", "Click"])
-    with co.Serial(image=image, env=env, doc=magic_doc()) as redis_store:
+    with co.Serial(image=image, env=env, doc=co.util.magic_doc()) as redis_store:
         co.Exec(redis_write_cmd, name="redis_write")
         co.Exec(redis_read_cmd, name="redis_read")
     return redis_store
@@ -47,7 +46,6 @@ def conducto_temp_data() -> co.Serial:
     pipeline is archived. One useful application is storing binaries in a
     build node, and retrieving them in a later test node. We exercise the
     `put` and `get` commands to do this.
-    to temporarily store and retrieve a binary.
     """
 
     build_cmd = """set -ex
@@ -62,7 +60,7 @@ conducto-temp-data get --name my_app_binary --file /tmp/app
     # Dockerfile installs golang and conducto.
     dockerfile = "./docker/Dockerfile.temp_data"
     image = co.Image(dockerfile=dockerfile, context=".", copy_dir="./code")
-    with co.Serial(image=image, doc=magic_doc()) as build_and_test:
+    with co.Serial(image=image, doc=co.util.magic_doc()) as build_and_test:
         co.Exec("conducto-temp-data --help", name="usage")
         co.Exec(build_cmd, name="build")
         co.Exec(test_cmd, name="test")
@@ -72,7 +70,7 @@ conducto-temp-data get --name my_app_binary --file /tmp/app
 def conducto_perm_data() -> co.Exec:
     """
     `conducto-perm-data` is a global persistent key-value store.
-    This is just like conducto-temp-data, but data is visible in all
+    This is just like `conducto-temp-data`, but data is visible in all
     pipelines and persists beyond the lifetime of your pipeline. You
     are responsible for manually clearing your data. One useful application
     is restoring a python virtual env to avoid repeatedly installing it
@@ -103,7 +101,7 @@ conducto-perm-data clear-cache --name code_venv --checksum $checksum
     """
 
     image = co.Image("python:3.8-alpine", copy_dir="./code", reqs_py=["conducto"])
-    with co.Serial(image=image, doc=magic_doc()) as venv_test:
+    with co.Serial(image=image, doc=co.util.magic_doc()) as venv_test:
         co.Exec("conducto-perm-data --help", name="usage")
         co.Exec(create_and_save_cmd, name="create_and_save")
         co.Exec(restore_and_test_cmd, name="restore_and_test")
@@ -143,7 +141,7 @@ docker inspect {name} --format="{{{{.State.Running}}}}"
         image="docker:19.03",
         stop_on_error=False,
         requires_docker=True,
-        doc=magic_doc(doc_only=True),
+        doc=co.util.magic_doc(doc_only=True),
     ) as wrapper:
         co.Exec(mock_redis_start_cmd, name="mock_redis_start")
         wrapper["redis_data_store"] = redis_data_store()
