@@ -1,0 +1,7 @@
+FROM golang:1.14.2-alpine
+
+# Install python
+RUN apk add --no-cache python3
+
+# Install conducto for conducto-temp-data
+RUN pip3 install conducto
