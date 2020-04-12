@@ -14,12 +14,12 @@ It builds two go binaries and tests them.
 
 
 import conducto as co
+from utils import magic_doc
 
 
 def build_and_test() -> co.Serial:
-    build_and_test.__doc__ = __doc__
     image = co.Image(image="golang:1.14", copy_dir="./code")
-    with co.Serial(image=image, doc=_magic_doc()) as pipeline:
+    with co.Serial(image=image, doc=magic_doc()) as pipeline:
         with co.Parallel(name="build"):
             co.Exec("go build -x auth.go", name="auth")
             co.Exec("go build -x app.go", name="app")
@@ -27,27 +27,6 @@ def build_and_test() -> co.Serial:
             co.Exec("go run auth.go --test", name="auth")
             co.Exec("go run app.go --test", name="app")
     return pipeline
-
-
-def _magic_doc():
-    import inspect, traceback
-    from conducto.shared.log import unindent
-
-    st = traceback.extract_stack()
-    func = globals()[st[-2].name]
-    docstring = func.__doc__
-    try:
-        code = inspect.getsource(func).split(docstring)[1]
-    except:
-        code = inspect.getsource(func).split("__doc__ = __doc__")[1]
-    pretty_doc = unindent(docstring)
-    pretty_code = code
-    if pretty_code.startswith('"""'):
-        pretty_code = pretty_code.lstrip('"')
-    pretty_code = unindent(pretty_code)
-    pretty_code = f"\n```python\n{pretty_code}\n```"
-    doc = pretty_doc + "\n" + pretty_code
-    return doc
 
 
 if __name__ == "__main__":

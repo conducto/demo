@@ -10,6 +10,7 @@ How to store artifacts and intermediate results:
 
 
 import conducto as co
+from utils import magic_doc
 
 
 def redis_data_store() -> co.Exec:
@@ -33,7 +34,7 @@ def redis_data_store() -> co.Exec:
         "REDIS_PORT": "6379",
     }
     image = co.Image("python:3.8-alpine", copy_dir="./code", reqs_py=["redis", "Click"])
-    with co.Serial(image=image, env=env, doc=_magic_doc()) as redis_store:
+    with co.Serial(image=image, env=env, doc=magic_doc()) as redis_store:
         co.Exec(redis_write_cmd, name="redis_write")
         co.Exec(redis_read_cmd, name="redis_read")
     return redis_store
@@ -61,7 +62,7 @@ conducto-temp-data get --name my_app_binary --file /tmp/app
     # Dockerfile installs golang and conducto.
     dockerfile = "./docker/Dockerfile.temp_data"
     image = co.Image(dockerfile=dockerfile, context=".", copy_dir="./code")
-    with co.Serial(image=image, doc=_magic_doc()) as build_and_test:
+    with co.Serial(image=image, doc=magic_doc()) as build_and_test:
         co.Exec("conducto-temp-data --help", name="usage")
         co.Exec(build_cmd, name="build")
         co.Exec(test_cmd, name="test")
@@ -102,7 +103,7 @@ conducto-perm-data clear-cache --name code_venv --checksum $checksum
     """
 
     image = co.Image("python:3.8-alpine", copy_dir="./code", reqs_py=["conducto"])
-    with co.Serial(image=image, doc=_magic_doc()) as venv_test:
+    with co.Serial(image=image, doc=magic_doc()) as venv_test:
         co.Exec("conducto-perm-data --help", name="usage")
         co.Exec(create_and_save_cmd, name="create_and_save")
         co.Exec(restore_and_test_cmd, name="restore_and_test")
@@ -112,7 +113,7 @@ conducto-perm-data clear-cache --name code_venv --checksum $checksum
 
 def examples() -> co.Parallel:
     ex = co.Parallel(doc=__doc__)
-    ex["redis_data_store"] = _redis_wrapper()
+    ex["redis_data_store_wrapper"] = _redis_wrapper()
     ex["conducto_temp_data"] = conducto_temp_data()
     ex["conducto_perm_data"] = conducto_perm_data()
     return ex
@@ -142,30 +143,12 @@ docker inspect {name} --format="{{{{.State.Running}}}}"
         image="docker:19.03",
         stop_on_error=False,
         requires_docker=True,
-        doc=_magic_doc(doc_only=True),
+        doc=magic_doc(doc_only=True),
     ) as wrapper:
         co.Exec(mock_redis_start_cmd, name="mock_redis_start")
         wrapper["redis_data_store"] = redis_data_store()
         co.Exec(mock_redis_stop_cmd, name="mock_redis_stop")
     return wrapper
-
-
-def _magic_doc(doc_only=False):
-    import inspect, traceback
-    from conducto.shared.log import unindent
-
-    st = traceback.extract_stack()
-    func = globals()[st[-2].name]
-    docstring = func.__doc__
-    code = inspect.getsource(func).split(docstring)[1]
-    pretty_doc = unindent(docstring)
-    pretty_code = code
-    if pretty_code.startswith('"""'):
-        pretty_code = pretty_code.lstrip('"')
-    pretty_code = unindent(pretty_code)
-    pretty_code = f"\n```python\n{pretty_code}\n```"
-    doc = pretty_doc + "\n" + pretty_code
-    return pretty_doc if doc_only else doc
 
 
 if __name__ == "__main__":

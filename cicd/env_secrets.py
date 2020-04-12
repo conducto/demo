@@ -9,6 +9,7 @@ Examples of how to specify:
 
 
 import conducto as co
+from utils import magic_doc
 
 
 def env_variables() -> co.Exec:
@@ -23,7 +24,7 @@ def env_variables() -> co.Exec:
     }
     image = co.Image("bash:5.0")
     command = "env | grep -e NUM_THREADS -e TEST_URL"
-    return co.Exec(command, env=env, image=image, doc=_magic_doc())
+    return co.Exec(command, env=env, image=image, doc=magic_doc())
 
 
 def user_secrets() -> co.Exec:
@@ -44,7 +45,7 @@ def user_secrets() -> co.Exec:
 
     image = co.Image("bash:5.0")
     command = "env | grep -e DEMO_PASSWORD -e DEMO_SSN"
-    return co.Exec(command, image=image, doc=_magic_doc())
+    return co.Exec(command, image=image, doc=magic_doc())
 
 
 def examples() -> co.Parallel:
@@ -52,24 +53,6 @@ def examples() -> co.Parallel:
     ex["env_variables"] = env_variables()
     ex["user_secrets"] = user_secrets()
     return ex
-
-
-def _magic_doc():
-    import inspect, traceback
-    from conducto.shared.log import unindent
-
-    st = traceback.extract_stack()
-    func = globals()[st[-2].name]
-    docstring = func.__doc__
-    code = inspect.getsource(func).split(docstring)[1]
-    pretty_doc = unindent(docstring)
-    pretty_code = code
-    if pretty_code.startswith('"""'):
-        pretty_code = pretty_code.lstrip('"')
-    pretty_code = unindent(pretty_code)
-    pretty_code = f"\n```python\n{pretty_code}\n```"
-    doc = pretty_doc + "\n" + pretty_code
-    return doc
 
 
 if __name__ == "__main__":
