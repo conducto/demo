@@ -11,8 +11,8 @@ Look for the *doc* icon to the right of each node name. If present, you
 will find helpful documentation when you click on that node.
 
 And finally, each top level node has a companion tutorial linked in its
-documentation. Check it out for a friendly explanation of each topic. Or,
-check out [*Getting Started With Conducto for CI/CD*](
+documentation. Check it out for a friendly explanation of the topic. Or,
+find a full list of tutorials in [Conducto for CI/CD](
 https://medium.com/conducto/getting-started-with-conducto-for-ci-cd-b6afb626f410).
 
 Click *Run* to get started and learn how to supercharge your CI/CD pipelines!
