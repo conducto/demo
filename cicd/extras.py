@@ -127,7 +127,6 @@ def our_cicd_config() -> co.Exec:
     from code.image_factory import ImageFactory
 
     with co.Parallel(doc=co.util.magic_doc()) as image_factory_example:
-
         ImageFactory.init()
         dockerfile = f"{ImageFactory.context}/cicd/docker/Dockerfile.conducto"
         dev_image = ImageFactory.get(dockerfile=dockerfile, reqs_py=["conducto"])
