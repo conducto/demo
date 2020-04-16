@@ -5,7 +5,8 @@ How to store artifacts and intermediate results:
 * use conducto-temp-data as a pipeline-local key-value store
 * use conducto-perm-data as a global persistent key-value store
 
-[Companion tutorial here.](https://medium.com/conducto/data-stores-cfb82460cb76)
+[Companion tutorial here.](
+https://medium.com/conducto/data-stores-cfb82460cb76)
 """
 
 

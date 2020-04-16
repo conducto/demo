@@ -1,0 +1,2 @@
+head(sunspots)
+summary(sunspots)

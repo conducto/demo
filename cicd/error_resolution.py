@@ -25,10 +25,24 @@ import conducto as co
 
 def flaky_error():
     """
-    Sometimes your pipeline has a flaky test that fails sometimes for no good
+    Sometimes your pipeline has a flaky test that periodically fails for no good
     reason. You really should fix it, but you do not want it to block you now.
-    In this scenario, select the errored node and click the _Skip_ button in
-    the web app to let your pipeline continue.
+    You have two options: you can **_reset_** the node to try again, or you can
+    **_skip_** the node to ignore the error and move on.
+
+    ### Reset
+    If the test passes 80% of the time and fails 20% of the time, and you
+    just want to run it again to give it a chance to pass, click the _Reset_
+    button in the web app to try re-run the node. If it passes, then great,
+    your pipeline will continue on.
+
+    ### Skip
+    In this scenario, the test keeps failing even after a few resets. In this
+    case, you should just skip the node. Select the errored `test2` node and
+    click the _Skip_ button in the web app to let your pipeline continue to
+    the `deploy` node. Alternatively, you can select the errored parent `test`
+    node, which will mark all subnodes as skipped, and let your pipeline
+    continue to the `deploy` node.
 
     See our [debug tutorial](
     https://medium.com/conducto/rapid-and-painless-debugging-ff2abdba44c1#a9f4)
@@ -56,6 +70,10 @@ def specification_error():
     (`CRATCH_DIR` -> `SCRATCH_DIR`), and reset the node to have it re-run
     immediately.
 
+    Note that this fix is local to _this instance_ of the pipeline, and does not
+    modify anything in the pipeline script. You also need to fix the code in
+    your pipeline script so that future ones do not suffer from this error.
+
     See our [debug tutorial](
     https://medium.com/conducto/rapid-and-painless-debugging-ff2abdba44c1#19fe)
     for a full walkthrough with screenshots.
@@ -75,15 +93,27 @@ def specification_error():
 def debug_error():
     """
     Sometimes you have a real issue that you need to debug. You can use
-    **_debug_** mode by clicking the _empty bug_ icon to immediately reproduce the
-    execution environment and command in a local container. Or use **_livedebug_**
-    mode by clicking the _lightning bug_ icon to do the same _and_ also mount
-    your local code into the container to allow you to use your local editor
-    and debug tools.
+    **_debug_** mode by clicking the _empty bug_ icon or **_live debug_** mode
+    by clicking the _lightning bug_ icon.
+
+    ### Debug Mode
+    This gives you a shell in a container with the node's command and execution
+    environment, including environment variables and a _copy_ of your code. You
+    can immediately reproduce the exact results you see in your pipeline. You can modify
+    command, environment, and code in this container. Any changes are discarded
+    when you exit this shell, so you must manually port your fixes back to your
+    local code.
+
+    ### Live Debug Mode
+    This gives you the same shell as debug mode, but also mounts
+    your local code so that you can edit code outside of the shell with your
+    own editor. Conversely, any changes you make inside the livedebug container
+    persist outside on your local host even after you exit the shell, allowing
+    you to instantly commit any of your fixes to your repo.
 
     To resolve the error in this example:
-    * click the _livedebug_ lightning bug in the upper right hand corner of the
-      node pane
+    * click the _live debug_ lightning bug in the upper right hand corner of
+      the node pane
     * run the copied command in a shell
     * run `sh /conducto.cmd` to reproduce the error
     * fix the trivial code bug in your own editor outside of the container

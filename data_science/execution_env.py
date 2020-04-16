@@ -17,32 +17,30 @@ Live debug can be enabled with path_map:
 * use dockerfile with a path_map
 
 [Companion tutorial here.](
-https://medium.com/conducto/execution-environment-5a66ff0a10bc)
+https://medium.com/conducto/execution-environment-3bb663549a0c)
 """
 
 import conducto as co
 
 
-pretty_table_script = """
-from prettytable import PrettyTable
-table = PrettyTable(field_names=["test", "result"])
-table.add_row(["auth", "OK"])
-table.add_row(["app", "FAILED"])
-print(table)
+numpy_script = """
+import numpy as np
+arr = np.arange(15).reshape(3,5)
+print(arr)
 """
 
 
 def existing_image() -> co.Exec:
     """Specify any existing image from Dockerhub or another image registry."""
-    image = co.Image("node:lts-buster")
-    return co.Exec("npm help", image=image, doc=co.util.magic_doc())
+    image = co.Image("r-base:3.6.0")
+    return co.Exec("Rscript --help", image=image, doc=co.util.magic_doc())
 
 
 def python_image_with_reqs_py() -> co.Exec:
     """Specify a python image and list requirements with `reqs_py`."""
-    image = co.Image("python:3.8-alpine", reqs_py=["PTable"])
+    image = co.Image("python:3.8-slim", reqs_py=["numpy"])
     return co.Exec(
-        f"python -c '{pretty_table_script}'", image=image, doc=co.util.magic_doc()
+        f"python -c '{numpy_script}'", image=image, doc=co.util.magic_doc()
     )
 
 
@@ -50,14 +48,14 @@ def dockerfile() -> co.Exec:
     """Specify a dockerfile for full flexibility in defining your image."""
     image = co.Image(dockerfile="./docker/Dockerfile.simple")
     return co.Exec(
-        f"python -c '{pretty_table_script}'", image=image, doc=co.util.magic_doc()
+        f"python -c '{numpy_script}'", image=image, doc=co.util.magic_doc()
     )
 
 
 def copy_local_code() -> co.Exec:
     """Copy local code into your image with `copy_dir`."""
-    image = co.Image("python:3.8-alpine", copy_dir="./code")
-    return co.Exec("python test.py", image=image, doc=co.util.magic_doc())
+    image = co.Image("r-base:3.6.0", copy_dir="./code")
+    return co.Exec("Rscript simple.R", image=image, doc=co.util.magic_doc())
 
 
 def clone_from_git() -> co.Exec:
@@ -66,10 +64,11 @@ def clone_from_git() -> co.Exec:
     Your image or dockerfile must have git installed for this to work.
     """
     git_url = "https://github.com/conducto/demo.git"
+    dockerfile = "./docker/Dockerfile.git"
     image = co.Image(
-        dockerfile="./docker/Dockerfile.git", copy_url=git_url, copy_branch="master",
+        dockerfile=dockerfile, copy_url=git_url, copy_branch="mjachowski-dev",
     )
-    return co.Exec("python cicd/code/test.py", image=image, doc=co.util.magic_doc())
+    return co.Exec("Rscript data_science/code/simple.R", image=image, doc=co.util.magic_doc())
 
 
 def dockerfile_with_copy() -> co.Exec:
@@ -77,7 +76,7 @@ def dockerfile_with_copy() -> co.Exec:
     You can COPY or ADD files directly in your dockerfile.
     """
     image = co.Image(dockerfile="./docker/Dockerfile.copy", context=".")
-    return co.Exec("python /root/code/test.py", image=image, doc=co.util.magic_doc())
+    return co.Exec("Rscript /root/code/simple.R", image=image, doc=co.util.magic_doc())
 
 
 def clone_from_git_with_path_map() -> co.Exec:
@@ -88,14 +87,14 @@ def clone_from_git_with_path_map() -> co.Exec:
     to the root directory of the git repo.
     """
     git_url = "https://github.com/conducto/demo.git"
-    path_map = {".": "cicd"}
+    path_map = {".": "data_science"}
     image = co.Image(
         dockerfile="./docker/Dockerfile.git",
         copy_url=git_url,
-        copy_branch="master",
+        copy_branch="mjachowski-dev",
         path_map=path_map,
     )
-    return co.Exec("python cicd/code/test.py", image=image, doc=co.util.magic_doc())
+    return co.Exec("Rscript data_science/code/simple.R", image=image, doc=co.util.magic_doc())
 
 
 def dockerfile_with_path_map() -> co.Exec:
@@ -108,7 +107,7 @@ def dockerfile_with_path_map() -> co.Exec:
     image = co.Image(
         dockerfile="./docker/Dockerfile.copy", context=".", path_map=path_map
     )
-    return co.Exec("python /root/code/test.py", image=image, doc=co.util.magic_doc())
+    return co.Exec("Rscript /root/code/simple.R", image=image, doc=co.util.magic_doc())
 
 
 def examples() -> co.Parallel:

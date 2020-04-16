@@ -8,8 +8,8 @@ This is a simple pipeline that uses the following minimal API:
 
 It builds two go binaries and tests them.
 
-[Companion tutorial here.](https://medium.com/conducto/your-first-pipeline-32a303b2cc5d)
-
+[Companion tutorial here.](
+https://medium.com/conducto/your-first-pipeline-32a303b2cc5d)
 """
 
 

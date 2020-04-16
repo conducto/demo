@@ -14,7 +14,7 @@ checkout. When you `get()` an image, you can specify an image (like
 "python:3.8-alpine") or a dockerfile.
 """
 
-import subprocess
+import os, subprocess, traceback
 import conducto as co
 
 
@@ -25,8 +25,12 @@ _REPO = "conducto/demo"
 class ImageFactory(object):
     @classmethod
     def init(cls, branch=None):
-        # Set the context to the local root of this git checkout.
-        cls.context = cls._shell("git rev-parse --show-toplevel")
+        # Set the context to the local root of the git checkout of the function that
+        # called this one.
+        stack = traceback.extract_stack(limit=2)
+        from_file = stack[-2].filename
+        from_dir = os.path.dirname(from_file) or "."
+        cls.context = cls._shell(f"git -C {from_dir} rev-parse --show-toplevel")
         if branch is None:
             cls._init_local()
         else:
@@ -69,11 +73,13 @@ class ImageFactory(object):
             "GIT_SHA1": cls._shell(cmd),
             "GIT_BRANCH": cls.copy_branch,
         }
+        if not cls.git_env["GIT_SHA1"]:
+            raise ValueError(f"{_REPO} on github.com does not have a branch named {branch}")
 
     @staticmethod
     def _shell(cmd):
-        p = subprocess.run(cmd, shell=True, capture_output=True)
-        return p.stdout.decode("utf-8").strip()
+        stdout = subprocess.check_output(cmd, shell=True)
+        return stdout.decode("utf-8").strip()
 
     @staticmethod
     def _get_github_token():

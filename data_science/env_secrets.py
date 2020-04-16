@@ -5,7 +5,7 @@ Examples of how to specify:
 * user secrets
 
 [Companion tutorial here.](
-https://medium.com/conducto/environment-variables-and-secrets-12256150e94d)
+https://medium.com/conducto/environment-variables-and-secrets-9acab502ec77)
 """
 
 
@@ -20,10 +20,10 @@ def env_variables() -> co.Exec:
     """
     env = {
         "NUM_THREADS": "4",
-        "TEST_URL": "http://localhost:8080",
+        "MY_DATASET": "volcano_data",
     }
     image = co.Image("bash:5.0")
-    command = "env | grep -e NUM_THREADS -e TEST_URL"
+    command = "env | grep -e NUM_THREADS -e MY_DATASET"
     return co.Exec(command, env=env, image=image, doc=co.util.magic_doc())
 
 
