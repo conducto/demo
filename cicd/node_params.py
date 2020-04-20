@@ -78,10 +78,11 @@ def same_container():
     force commands to run in the same container with the argument
     `same_container=co.SameContainer.NEW`. All child nodes will have
     the default `same_container=co.SameContainer.INHERIT` and will share
-    the container with the parent. This is useful if you want greater
-    visibility into a command that chains together multiple subcommands.
-    An error in a single subcommand will be easier to identify than an
-    error in the long command.
+    the container with the parent.
+
+    This is useful if you want greater visibility into a command that chains
+    together multiple subcommands. An error in a single subcommand will be
+    easier to identify than an error in the long command.
     """
     error_doc = "**_Intentional error in this node!_**"
     long_command = """set -ex
@@ -100,6 +101,31 @@ echo Then I go home.
             co.Exec("echo Then I do that.", name="do_that")
             co.Exec("oops_this_is_not_a_valid_command", name="oops", doc=error_doc)
             co.Exec("echo Then I go home.", name="go_home")
+    return same_container_example
+
+
+def same_container_2():
+    """
+    Another reason to use `same_container=co.SameContainer.NEW` to force
+    container sharing is when you want your commands to share a filesystem.
+    This makes a build and test pipeline very easy, for example, because you
+    simply write a binary to the filesystem in the build node, and the test
+    node can automatically see it. There is no need to put the binary in a
+    separate data store.
+
+    However, there is a downside to this `same_container` mode. When sharing a
+    container, Exec nodes will _always run in serial_, even if the parent is
+    a Parallel node. So, you lose the ability to parallelize.
+    """
+    dockerfile = "./docker/Dockerfile.temp_data"
+    image = co.Image(dockerfile=dockerfile, context=".", copy_dir="./code")
+    with co.Parallel(image=image, doc=co.util.magic_doc()) as same_container_example:
+        with co.Serial(name="shared_filesystem", same_container=co.SameContainer.NEW):
+            co.Exec("go build -o bin/app ./app.go", name="build")
+            co.Exec("bin/app --test", name="test")
+        with co.Parallel(name="always_serial", same_container=co.SameContainer.NEW):
+            co.Exec("echo I cannot run in parallel", name="parallel_exec_1")
+            co.Exec("echo even if I want to", name="parallel_exec_2")
     return same_container_example
 
 
@@ -151,6 +177,7 @@ def examples() -> co.Parallel:
     ex["requires_docker"] = requires_docker()
     ex["stop_on_error"] = stop_on_error()
     ex["same_container"] = same_container()
+    ex["same_container_2"] = same_container_2()
     ex["doc"] = doc()
     ex["skip"] = skip()
     return ex
