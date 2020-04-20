@@ -13,12 +13,14 @@ unzip -cq steo.zip | conducto-perm-data puts --name {PERM_DATA_PATH}
 """.strip()
 
 DATASETS = {
-    "Heating Degree Days"   : r"^STEO.ZWHD_[^_]*\.M$",
-    "Cooling Degree Days"   : r"^STEO.ZWCD_[^_]*.M$",
-    "Electricity Generation": r"^STEO.NGEPGEN_[^_]*\.M$"
+    "Heating Degree Days": r"^STEO.ZWHD_[^_]*\.M$",
+    "Cooling Degree Days": r"^STEO.ZWCD_[^_]*.M$",
+    "Electricity Generation": r"^STEO.NGEPGEN_[^_]*\.M$",
 }
 
-IMG = co.Image("python:3.8", copy_dir=".", reqs_py=["conducto", "pandas", "matplotlib", "tabulate"])
+IMG = co.Image(
+    "python:3.8", copy_dir=".", reqs_py=["conducto", "pandas", "matplotlib", "tabulate"]
+)
 
 
 def run() -> co.Serial:
@@ -32,7 +34,9 @@ def run() -> co.Serial:
         # Then make a few different visualizations of it.
         output["Display"] = co.Parallel()
         for dataset in DATASETS.keys():
-            output["Display"][dataset] = co.Exec(f"python data_science.py display --dataset='{dataset}'")
+            output["Display"][dataset] = co.Exec(
+                f"python data_science.py display --dataset='{dataset}'"
+            )
     return output
 
 
@@ -44,7 +48,9 @@ def display(dataset):
     all_data = [json.loads(line) for line in data_text.splitlines()]
 
     regex = DATASETS[dataset]
-    subset_data = [d for d in all_data if "series_id" in d and re.search(regex, d["series_id"])]
+    subset_data = [
+        d for d in all_data if "series_id" in d and re.search(regex, d["series_id"])
+    ]
 
     import matplotlib.pyplot as plt
     import matplotlib.cm as cm
@@ -61,14 +67,27 @@ def display(dataset):
             month = int(yyyymm[-2:])
             by_month[month].append(value)
         y = [np.mean(by_month[month]) for month in range(1, 13)]
-        data[d['name']] = y
+        data[d["name"]] = y
 
     df = pd.DataFrame(data=data)
-    df["Month"] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    df["Month"] = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ]
     df.set_index("Month", inplace=True)
 
     # Graph each dataset as one line on a single plot.
-    colors = [cm.viridis(z) for z in np.linspace(0, .99, len(subset_data))]
+    colors = [cm.viridis(z) for z in np.linspace(0, 0.99, len(subset_data))]
     for i, column in enumerate(df.columns):
         y = df[column].values
         plt.plot(y, label=column, color=colors[i])
@@ -82,13 +101,15 @@ def display(dataset):
     co.temp_data.put(dataname, filename)
 
     # Print out results as markdown
-    print(f"""
+    print(
+        f"""
 <ConductoMarkdown>
 ![img]({co.temp_data.url(dataname)})
 
 {df.transpose().round(2).to_markdown()}
 </ConductoMarkdown>
-    """)
+    """
+    )
 
 
 if __name__ == "__main__":

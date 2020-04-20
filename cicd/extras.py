@@ -6,6 +6,9 @@ wanted to share them in case they help.
 * Pass a python function to an Exec node.
 * Put Markdown in stdout/stderr.
 * Check out our internal CI/CD configuration.
+
+[Companion tutorial here.](
+https://medium.com/conducto/ci-cd-extras-77a9c5ac8289)
 """
 
 import conducto as co
@@ -37,8 +40,8 @@ def simple_types(price: float, count=3, show_sum=True):
 def complex_types(prices: typing.List[float], date: datetime.date):
     """
     Conducto also understands lists of basic types, and some complex types like
-    `datetime.date`. For custom types, define an object with a `to_str` method and a
-    `from_str` staticmethod.
+    `datetime`'s `date`, `time`, and `datetime`. For custom types, define an object
+    with a `to_str` method and a `from_str` staticmethod.
     """
     tomorrow = date + datetime.timedelta(days=1)
     print(f"Today is {date}. Tomorrow is {tomorrow}.")
