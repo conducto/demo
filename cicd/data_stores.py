@@ -1,9 +1,15 @@
 """
 ### **Data Stores**
-How to store artifacts and intermediate results:
-* connect to your own data store (for example, redis)
-* use conducto-temp-data as a pipeline-local key-value store
-* use conducto-perm-data as a global persistent key-value store
+You will need to store artifacts and intermediate results. You cannot
+simply write these artifacts to the local filesystem, because each
+command runs in a container with its own filesystem that disappears
+when the container exits. And, in cloud mode, containers run on different
+machines, so there is no shared filesystem to mount. So, Conducto supports
+a few different approaches that work in a containerized world.
+
+* Connect to your own data store (for example, redis).
+* Use `conducto-temp-data` as a pipeline-local key-value store.
+* Use `conducto-perm-data` as a global persistent key-value store.
 
 [Companion tutorial here.](
 https://medium.com/conducto/data-stores-cfb82460cb76)
