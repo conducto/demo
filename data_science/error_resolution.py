@@ -1,7 +1,7 @@
 """
 ### **Error Resolution**
-Anyone who has spent time with complex CI/CD pipelines has spent _a lot_ of
-that time resolving errors with them. Bugs are just a reality when you are
+Anyone who has spent time with complex data science pipelines has spent _a lot_
+of that time resolving errors with them. Bugs are just a reality when you are
 trying to implement a complex system. Conducto makes it as easy as possible
 to resolve the three types of errors that we think you are most likely to
 encounter:
@@ -17,7 +17,7 @@ Note: **_Errors in this node are intentional._** Follow the docs in each
 subnode to debug each one as an exercise.
 
 [Companion tutorial here.] (
-https://medium.com/conducto/easy-error-resolution-b9f2b54f22b7)
+https://medium.com/conducto/easy-error-resolution-45ca08d40f1d)
 """
 
 
@@ -26,38 +26,40 @@ import conducto as co
 
 def flaky_error():
     """
-    Sometimes your pipeline has a flaky test that periodically fails for no good
-    reason. You really should fix it, but you do not want it to block you now.
-    You have two options: you can **_reset_** the node to try again, or you can
+    Sometimes your pipeline has a flaky command that periodically fails for no
+    good reason. You really should fix it, but you do not want it to block you
+    now. Or, your pipeline computes features over 500 days worth of data in
+    parallel, and 2 days out of 500 fail due to corrupt data. In the first case,
+    you can **_reset_** the node to try again. Or, in either case, you can
     **_skip_** the node to ignore the error and move on.
 
     ### Reset
-    If the test passes 80% of the time and fails 20% of the time, and you
+    If the command passes 80% of the time and fails 20% of the time, and you
     just want to run it again to give it a chance to pass, click the _Reset_
     button in the web app to try re-run the node. If it passes, then great,
     your pipeline will continue on.
 
     ### Skip
-    In this scenario, the test keeps failing even after a few resets. In this
-    case, you should just skip the node. Select the errored `test2` node and
+    In this scenario, the command keeps failing even after a few resets. In this
+    case, you should just skip the node. Select the errored `feature2` node and
     click the _Skip_ button in the web app to let your pipeline continue to
-    the `deploy` node. Alternatively, you can select the errored parent `test`
-    node, which will mark all subnodes as skipped, and let your pipeline
-    continue to the `deploy` node.
+    the `build_model` node. Alternatively, you can select the errored parent
+    `compute_features` node, which will mark all subnodes as skipped, and let
+    your pipeline continue to the `deploy` node.
 
     See our [tutorial](
-    https://medium.com/conducto/easy-error-resolution-b9f2b54f22b7)
+    https://medium.com/conducto/easy-error-resolution-45ca08d40f1d)
     for a full walkthrough with screenshots.
     """
     skip_doc = "**_Click the Skip button to let this pipeline continue!_**"
     image = co.Image("bash:5.0")
-    with co.Serial(image=image, doc=co.util.magic_doc()) as test_and_deploy:
-        with co.Parallel(name="test"):
-            co.Exec("echo test app 1", name="test1")
-            co.Exec("echo test app 2 && force_fail", name="test2", doc=skip_doc)
-            co.Exec("echo test app 3", name="test3")
-        co.Exec("echo deploying all apps", name="deploy")
-    return test_and_deploy
+    with co.Serial(image=image, doc=co.util.magic_doc()) as compute_model:
+        with co.Parallel(name="compute_features"):
+            co.Exec("echo feature 1", name="feature1")
+            co.Exec("echo feature 2 && force_fail", name="feature2", doc=skip_doc)
+            co.Exec("echo feature 3", name="feature3")
+        co.Exec("echo build_model", name="build_model")
+    return compute_model
 
 
 def specification_error():
@@ -80,7 +82,7 @@ def specification_error():
     same errors.
 
     See our [tutorial](
-    https://medium.com/conducto/easy-error-resolution-b9f2b54f22b7)
+    https://medium.com/conducto/easy-error-resolution-45ca08d40f1d)
     for a full walkthrough with screenshots.
     """
     error_doc = (
@@ -105,17 +107,17 @@ def debug_error():
     ### Debug Mode
     This gives you a shell in a container with the node's command and execution
     environment, including environment variables and a _copy_ of your code. You
-    can immediately reproduce the exact results you see in your pipeline. You can modify
-    command, environment, and code in this container. Any changes are discarded
-    when you exit this shell, so you must manually port your fixes back to your
-    local code.
+    can immediately reproduce the exact results you see in your pipeline. You
+    can modify command, environment, and code in this container. Any changes are
+    discarded when you exit this shell, so you must manually port your fixes
+    back to your local code.
 
     ### Live Debug Mode
-    This gives you the same shell as debug mode, but also mounts
-    your local code so that you can edit code outside of the shell with your
-    own editor. Conversely, any changes you make inside the livedebug container
-    persist outside on your local host even after you exit the shell, allowing
-    you to instantly commit any of your fixes to your repo.
+    This gives you the same shell as debug mode, but also mounts your local
+    code so that you can edit code outside of the shell with your own editor.
+    Conversely, any changes you make inside the livedebug container persist
+    outside on your local host even after you exit the shell, allowing you
+    to instantly commit any of your fixes to your repo.
 
     To resolve the error in this example:
     * click the _live debug_ lightning bug in the upper right hand corner of
@@ -128,7 +130,7 @@ def debug_error():
     * see the node run successfully
 
     See our [tutorial](
-    https://medium.com/conducto/easy-error-resolution-b9f2b54f22b7)
+    https://medium.com/conducto/easy-error-resolution-45ca08d40f1d)
     for a full walkthrough with screenshots.
     """
     image = co.Image("python:3.8-alpine", copy_dir="./code")

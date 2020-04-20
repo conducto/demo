@@ -8,7 +8,7 @@ Conducto:
 
     python demo.py islands --local
 
-Conducto particularly powerful for **CI/CD** and **Data Science**. We have
+Conducto is particularly powerful for **CI/CD** and **Data Science**. We have
 dedicated demos and tutorials for each. Choose your own adventure!
 
 ### CI/CD
@@ -20,7 +20,8 @@ then run the demo.
     python full_demo.py --local
 
 ### Data Science
-Read [Conducto for Data Science](https://medium.com/conducto/data/home),
+Read [Conducto for Data Science](
+https://medium.com/conducto/conducto-for-data-science-59f426ee57b),
 then run the demo.
 
     cd data_science

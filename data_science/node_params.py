@@ -14,7 +14,7 @@ learned about `image` and `env`. You can also specify:
 Note: **_Errors in this node are intentional._**
 
 [Companion tutorial here.](
-https://medium.com/conducto/node-parameters-baf95e136437)
+https://medium.com/conducto/node-parameters-7be236eaeaac)
 """
 
 
@@ -109,9 +109,9 @@ def same_container_2():
     """
     Another reason to use `same_container=co.SameContainer.NEW` to force
     container sharing is when you want your commands to share a filesystem.
-    This makes a build and test pipeline very easy, for example, because you
-    simply write a binary to the filesystem in the build node, and the test
-    node can automatically see it. There is no need to put the binary in a
+    This makes a download and analyze pipeline very easy, for example, because
+    you simply download the data to the filesystem in one node, and the analyze
+    node can automatically see it. There is no need to put the data in a
     separate data store.
 
     However, there is a downside to this `same_container` mode. When sharing a
@@ -121,12 +121,14 @@ def same_container_2():
     lost. To restore the container state you need to rerun all the nodes, making
     debugging or error resetting a little more awkward.
     """
-    dockerfile = "./docker/Dockerfile.temp_data"
-    image = co.Image(dockerfile=dockerfile, context=".", copy_dir="./code")
+    dockerfile = "./docker/Dockerfile.curl"
+    image = co.Image(dockerfile=dockerfile, context=".")
     with co.Parallel(image=image, doc=co.util.magic_doc()) as same_container_example:
         with co.Serial(name="shared_filesystem", same_container=co.SameContainer.NEW):
-            co.Exec("go build -o bin/app ./app.go", name="build")
-            co.Exec("bin/app --test", name="test")
+            data_url = "http://api.eia.gov/bulk/STEO.zip"
+            co.Exec(f"curl {data_url} > /tmp/data.zip", name="download")
+            co.Exec("unzip -pq /tmp/data.zip > /tmp/data", name="unzip")
+            co.Exec("wc -l /tmp/data", name="analyze")
         with co.Parallel(name="always_serial", same_container=co.SameContainer.NEW):
             co.Exec("echo I cannot run in parallel", name="parallel_exec_1")
             co.Exec("echo even if I want to", name="parallel_exec_2")
@@ -161,16 +163,15 @@ def skip():
     for example, if you have a pipeline that has reasonable default way to
     run, but you want the ability to manually enable (unskip) additional steps
     from the web app. A specific example might be deploying a production
-    environment. You could skip the deployment node by default, and require
-    that someone manually review the output of the pipeline before unskipping
-    and running the node to complete the deployment.
+    model. You could skip the deployment node by default, and require that
+    someone manually review the output of the pipeline before unskipping and
+    running the node to complete the deployment.
     """
     image = co.Image("bash:5.0")
     with co.Serial(image=image, doc=co.util.magic_doc()) as skip_example:
-        co.Exec("echo build some stuff", name="build")
-        co.Exec("echo test some stuff", name="test")
-        co.Exec("echo deploy staging", name="deploy staging")
-        co.Exec("echo deploy prod", name="deploy prod", skip=True)
+        co.Exec("echo build model", name="build")
+        co.Exec("echo test model", name="test")
+        co.Exec("echo deploy model", name="deploy", skip=True)
         co.Exec("echo send status email", name="send email")
     return skip_example
 

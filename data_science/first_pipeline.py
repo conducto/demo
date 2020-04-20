@@ -16,13 +16,15 @@ import conducto as co
 
 
 def download_and_plot() -> co.Serial:
-    # Download data from the United States Energy Information Administration.
+    # Download data from the United States Energy Information 
+    # Administration. This uses `conducto-perm-data` as a data
+    # store as detailed in our data-stores demo.
     download_command = """set -ex
 curl http://api.eia.gov/bulk/STEO.zip > data.zip
 unzip -cq data.zip | conducto-perm-data puts --name steo-data
 """
 
-    # Specify simple pipeline that downloads data, then plots two datasets.
+    # A simple pipeline that downloads data, then plots two datasets.
     image = co.Image(dockerfile="./docker/Dockerfile.first", copy_dir="./code")
     with co.Serial(image=image, doc=co.util.magic_doc()) as pipeline:
         co.Exec(download_command, name="download")
