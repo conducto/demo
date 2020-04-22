@@ -66,7 +66,7 @@ def clone_from_git() -> co.Exec:
     git_url = "https://github.com/conducto/demo.git"
     dockerfile = "./docker/Dockerfile.git"
     image = co.Image(
-        dockerfile=dockerfile, copy_url=git_url, copy_branch="mjachowski-dev",
+        dockerfile=dockerfile, copy_url=git_url, copy_branch="master",
     )
     return co.Exec("Rscript data_science/code/simple.R", image=image, doc=co.util.magic_doc())
 
@@ -91,7 +91,7 @@ def clone_from_git_with_path_map() -> co.Exec:
     image = co.Image(
         dockerfile="./docker/Dockerfile.git",
         copy_url=git_url,
-        copy_branch="mjachowski-dev",
+        copy_branch="master",
         path_map=path_map,
     )
     return co.Exec("Rscript data_science/code/simple.R", image=image, doc=co.util.magic_doc())
