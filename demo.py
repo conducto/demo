@@ -45,7 +45,7 @@ def hello() -> co.Exec:
         "to test your installation.** The pipeline should run successfully "
         "and finish in the green _done_ state.\n\n"
         ) + __doc__[idx:]
-    return co.Exec("echo Hello world! Welcome to Conducto.", doc=doc)
+    return co.Exec("echo Hello world! Welcome to Conducto.", image="bash:5.0", doc=doc)
 
 
 def islands() -> co.Serial:
@@ -64,7 +64,7 @@ def islands() -> co.Serial:
     Click the _Run_ button on the right to execute the pipeline. The
     pipeline should run successfully and finish in the green _done_ state.
     """
-    with co.Serial(doc=co.util.magic_doc()) as pipeline:
+    with co.Serial(doc=co.util.magic_doc(), image="bash:5.0") as pipeline:
         pipeline["hawaii"] = co.Exec("echo big island")
         with co.Parallel(name="maui_county") as maui_county:
             maui_county["maui"] = co.Exec("echo valley isle")
