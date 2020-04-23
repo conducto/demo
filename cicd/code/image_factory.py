@@ -48,8 +48,10 @@ class ImageFactory(object):
         cls.copy_branch = None
         cls.path_map = None
         cls.git_env = {
-            "GIT_SHA1": cls._shell("git rev-parse HEAD"),
-            "GIT_BRANCH": cls._shell("git rev-parse --abbrev-ref HEAD"),
+            "GIT_SHA1": os.environ.get("GIT_SHA1") or \
+                cls._shell("git rev-parse HEAD"),
+            "GIT_BRANCH": os.environ.get("GIT_BRANCH") or \
+                cls._shell("git rev-parse --abbrev-ref HEAD"),
         }
 
     @classmethod
@@ -61,7 +63,7 @@ class ImageFactory(object):
         checkout to ".", the root of the git checkout in the image.
         """
         cls.copy_dir = None
-        # Uncomment these lines for a private repo. Populate GITHUB_TOKEN 
+        # Uncomment these lines for a private repo. Populate GITHUB_TOKEN
         # secret, _USER, and _REPO appropriately.
         # cls.github_token = cls._get_github_token()
         # cls.copy_url = f"https://{_USER}:{cls.github_token}@github.com/{_REPO}.git"
@@ -74,7 +76,9 @@ class ImageFactory(object):
             "GIT_BRANCH": cls.copy_branch,
         }
         if not cls.git_env["GIT_SHA1"]:
-            raise ValueError(f"{_REPO} on github.com does not have a branch named {branch}")
+            raise ValueError(
+                f"{_REPO} on github.com does not have a branch named {branch}"
+            )
 
     @staticmethod
     def _shell(cmd):
