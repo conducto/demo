@@ -4,7 +4,7 @@ import collections, conducto as co, json, re
 # Data is downloaded from the United States Energy Information Administration.
 # https://www.eia.gov/opendata/bulkfiles.php
 
-PERM_DATA_PATH = "conducto/demo/data_science/steo.txt"
+PERM_DATA_PATH = "conducto/demo/weather_data/steo.txt"
 
 DOWNLOAD_COMMAND = f"""
 echo "Downloading"
@@ -35,7 +35,7 @@ def run() -> co.Serial:
         output["Display"] = co.Parallel()
         for dataset in DATASETS.keys():
             output["Display"][dataset] = co.Exec(
-                f"python data_science.py display --dataset='{dataset}'"
+                f"python weather_data.py display --dataset='{dataset}'"
             )
     return output
 
@@ -96,7 +96,7 @@ def display(dataset):
 
     # Save to disk, and then to co.temp_data
     filename = "/tmp/image.png"
-    dataname = f"conducto/demo/data_science/{dataset}.png"
+    dataname = f"conducto/demo/weather_data/{dataset}.png"
     plt.savefig(filename)
     co.temp_data.put(dataname, filename)
 
