@@ -70,7 +70,7 @@ class ImageFactory(object):
         cls.copy_url = f"https://github.com/{_REPO}.git"
         cls.copy_branch = branch
         cls.path_map = {cls.context: "."}
-        cmd = cls._shell(f"git ls-remote {cls.copy_url} refs/heads/{cls.copy_branch}")
+        remote = cls._shell(f"git ls-remote {cls.copy_url} refs/heads/{cls.copy_branch}")
         cls.git_env = {
             "GIT_SHA1": remote.strip().split('\t')[0],
             "GIT_BRANCH": cls.copy_branch,
