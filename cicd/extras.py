@@ -12,6 +12,7 @@ https://medium.com/conducto/ci-cd-extras-77a9c5ac8289)
 """
 
 import conducto as co
+import subprocess
 import datetime
 import typing
 
@@ -154,7 +155,14 @@ def examples() -> co.Parallel:
     ex = co.Parallel(doc=__doc__)
     ex["exec_python"] = exec_python()
     ex["markdown_in_stdout"] = markdown_in_stdout()
-    ex["our_cicd_config"] = our_cicd_config()
+
+    has_git = True
+    try:
+        subprocess.run(["git"], capture_output=True)
+    except FileNotFoundError:
+        has_git = False
+    if has_git:
+        ex["our_cicd_config"] = our_cicd_config()
     return ex
 
 
