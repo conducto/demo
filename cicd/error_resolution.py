@@ -121,9 +121,9 @@ def debug_error():
     * click the _live debug_ lightning bug in the upper right hand corner of
       the node pane
     * run the copied command in a shell
-    * run `sh /conducto.cmd` to reproduce the error
+    * run `sh /cmd.conducto` to reproduce the error
     * fix the trivial code bug in your own editor outside of the container
-    * re-run `sh /conducto.cmd` to verify the bug is fixed
+    * re-run `sh /cmd.conducto` to verify the bug is fixed
     * click _Rebuild and Reset_ in the upper right hand corner of the node pane
     * see the node run successfully
 

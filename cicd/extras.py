@@ -158,7 +158,7 @@ def examples() -> co.Parallel:
 
     has_git = True
     try:
-        subprocess.run(["git"], capture_output=True)
+        subprocess.run(["git"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except FileNotFoundError:
         has_git = False
     if has_git:
