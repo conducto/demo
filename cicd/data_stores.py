@@ -17,6 +17,7 @@ https://medium.com/conducto/data-stores-cfb82460cb76)
 
 
 import conducto as co
+import utils
 
 
 def redis_data_store() -> co.Exec:
@@ -32,15 +33,14 @@ def redis_data_store() -> co.Exec:
     export_cmd = (
         "export REDIS_HOST=$(ip route show default | awk '/default/{print $3}')"
     )
-    redis_write_cmd = f"{export_cmd} && python redis_example.py --write"
-    redis_read_cmd = f"{export_cmd} && python redis_example.py --read"
+    redis_write_cmd = f"{export_cmd} && python code/redis_example.py --write"
+    redis_read_cmd = f"{export_cmd} && python code/redis_example.py --read"
 
     env = {
         "REDIS_HOST": "override_me",
         "REDIS_PORT": "6379",
     }
-    image = co.Image("python:3.8-alpine", copy_dir="./code", reqs_py=["redis", "Click"])
-    with co.Serial(image=image, env=env, doc=co.util.magic_doc()) as redis_store:
+    with co.Serial(image=utils.IMG, env=env, doc=co.util.magic_doc()) as redis_store:
         co.Exec(redis_write_cmd, name="redis_write")
         co.Exec(redis_read_cmd, name="redis_read")
     return redis_store
@@ -88,14 +88,14 @@ def conducto_perm_data() -> co.Exec:
     create_and_save_cmd = """set -ex
 python -m venv venv
 . venv/bin/activate
-pip install -r requirements.txt
-checksum=$(md5sum requirements.txt | cut -d" " -f1)
+pip install -r code/requirements.txt
+checksum=$(md5sum code/requirements.txt | cut -d" " -f1)
 conducto-perm-data save-cache \
     --name code_venv --checksum $checksum --save-dir venv
 """
 
     restore_and_test_cmd = """set -ex
-checksum=$(md5sum requirements.txt | cut -d" " -f1)
+checksum=$(md5sum code/requirements.txt | cut -d" " -f1)
 conducto-perm-data restore-cache \
     --name code_venv --checksum $checksum --restore-dir restored_venv
 . restored_venv/venv/bin/activate
@@ -103,12 +103,11 @@ pip list
 """
 
     clear_cmd = """set -ex
-checksum=$(md5sum requirements.txt | cut -d" " -f1)
+checksum=$(md5sum code/requirements.txt | cut -d" " -f1)
 conducto-perm-data clear-cache --name code_venv --checksum $checksum
     """
 
-    image = co.Image("python:3.8-alpine", copy_dir="./code", reqs_py=["conducto"])
-    with co.Serial(image=image, doc=co.util.magic_doc()) as venv_test:
+    with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as venv_test:
         co.Exec("conducto-perm-data --help", name="usage")
         co.Exec(create_and_save_cmd, name="create_and_save")
         co.Exec(restore_and_test_cmd, name="restore_and_test")

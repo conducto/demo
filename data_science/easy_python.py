@@ -22,9 +22,8 @@ https://medium.com/conducto/easy-and-powerful-python-pipelines-2de5825375f2)
 
 
 import collections, conducto as co, json, math, random
+import utils
 
-
-IMG = co.Image("python:3.8", copy_dir=".", reqs_py=["conducto", "matplotlib"])
 MAX_SIZE = 6
 RESULT_DIR = "conducto/demo_data/results"
 WORDLIST_PATH = "conducto/demo_data/wordlist"
@@ -32,7 +31,7 @@ WORDLIST_PATH = "conducto/demo_data/wordlist"
 
 def run() -> co.Serial:
     run.__doc__ = __doc__
-    with co.Serial(image=IMG, doc=co.util.magic_doc()) as output:
+    with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as output:
         output["gen_data"] = n = co.Exec(gen_data, WORDLIST_PATH, count=50000)
         n.doc = co.util.magic_doc(func=gen_data)
 

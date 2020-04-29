@@ -13,6 +13,7 @@ https://medium.com/conducto/your-first-data-science-pipeline-cc9ceac142f6)
 
 
 import conducto as co
+import utils
 
 
 def download_and_plot() -> co.Serial:
@@ -25,12 +26,11 @@ unzip -cq data.zip | conducto-perm-data puts --name steo-data
 """
 
     # A simple pipeline that downloads data, then plots two datasets.
-    image = co.Image(dockerfile="./docker/Dockerfile.first", copy_dir="./code")
-    with co.Serial(image=image, doc=co.util.magic_doc()) as pipeline:
+    with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as pipeline:
         co.Exec(download_command, name="download")
         with co.Parallel(name="plot"):
-            co.Exec("python plot.py --dataset heating", name="heating")
-            co.Exec("python plot.py --dataset cooling", name="cooling")
+            co.Exec("python code/plot.py --dataset heating", name="heating")
+            co.Exec("python code/plot.py --dataset cooling", name="cooling")
     return pipeline
 
 

@@ -10,6 +10,7 @@ https://medium.com/conducto/environment-variables-and-secrets-9acab502ec77)
 
 
 import conducto as co
+import utils
 
 
 def env_variables() -> co.Exec:
@@ -22,9 +23,8 @@ def env_variables() -> co.Exec:
         "NUM_THREADS": "4",
         "MY_DATASET": "volcano_data",
     }
-    image = co.Image("bash:5.0")
     command = "env | grep -e NUM_THREADS -e MY_DATASET"
-    return co.Exec(command, env=env, image=image, doc=co.util.magic_doc())
+    return co.Exec(command, env=env, image=utils.IMG, doc=co.util.magic_doc())
 
 
 def user_secrets() -> co.Exec:
@@ -43,9 +43,8 @@ def user_secrets() -> co.Exec:
     secrets = co.api.Secrets()
     secrets.put_user_secrets(token, user_secrets, replace=False)
 
-    image = co.Image("bash:5.0")
     command = "env | grep -e DEMO_PASSWORD -e DEMO_SSN"
-    return co.Exec(command, image=image, doc=co.util.magic_doc())
+    return co.Exec(command, image=utils.IMG, doc=co.util.magic_doc())
 
 
 def examples() -> co.Parallel:

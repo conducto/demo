@@ -22,7 +22,7 @@ https://medium.com/conducto/easy-error-resolution-b9f2b54f22b7)
 
 
 import conducto as co
-
+import utils
 
 def flaky_error():
     """
@@ -50,8 +50,7 @@ def flaky_error():
     for a full walkthrough with screenshots.
     """
     skip_doc = "**_Click the Skip button to let this pipeline continue!_**"
-    image = co.Image("bash:5.0")
-    with co.Serial(image=image, doc=co.util.magic_doc()) as test_and_deploy:
+    with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as test_and_deploy:
         with co.Parallel(name="test"):
             co.Exec("echo test app 1", name="test1")
             co.Exec("echo test app 2 && force_fail", name="test2", doc=skip_doc)
@@ -86,9 +85,8 @@ def specification_error():
     error_doc = (
         "**_Click the Modify button, fix the error, then click Reset!_**"
     )
-    image = co.Image("bash:5.0")
     env = {"CRATCH_DIR": "/tmp"}
-    with co.Serial(image=image, env=env, doc=co.util.magic_doc()) as spec_error:
+    with co.Serial(image=utils.IMG, env=env, doc=co.util.magic_doc()) as spec_error:
         co.Exec("echo first do this", name="do_this")
         co.Exec('ls -ltrd "$SCRATCH_DIR"', name="env_error", doc=error_doc)
         co.Exec('lss -ltrd /root', name="command_error", doc=error_doc)
@@ -131,8 +129,7 @@ def debug_error():
     https://medium.com/conducto/easy-error-resolution-b9f2b54f22b7)
     for a full walkthrough with screenshots.
     """
-    image = co.Image("python:3.8-alpine", copy_dir="./code")
-    return co.Exec("python debug_me.py", image=image, doc=co.util.magic_doc())
+    return co.Exec("python code/debug_me.py", image=utils.IMG, doc=co.util.magic_doc())
 
 
 def examples() -> co.Parallel:

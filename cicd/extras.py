@@ -15,7 +15,7 @@ import conducto as co
 import subprocess
 import datetime
 import typing
-
+import utils
 
 def no_types(name, thing):
     """
@@ -70,8 +70,7 @@ def exec_python() -> co.Parallel:
     conducto [file_with_function].py [function_name] --arg1=val1 --arg2=val2 ...
     ```
     """
-    image = co.Image("python:3.8-alpine", copy_dir=".", reqs_py=["conducto"])
-    output = co.Parallel(image=image, doc=co.util.magic_doc())
+    output = co.Parallel(image=utils.IMG, doc=co.util.magic_doc())
 
     output["no_types"] = co.Exec(no_types, "world", thing="moon")
     output["no_types"].doc = co.util.magic_doc(func=no_types)
@@ -94,12 +93,7 @@ def markdown_in_stdout() -> co.Exec:
 
     **_Scroll down to stdout to see Markdown!_**
     """
-    image = co.Image(
-        "python:3.8-slim",
-        reqs_py=["matplotlib", "numpy", "conducto"],
-        copy_dir="./code",
-    )
-    return co.Exec("python plot.py", image=image, doc=co.util.magic_doc())
+    return co.Exec("python code/plot.py", image=utils.IMG, doc=co.util.magic_doc())
 
 
 def our_cicd_config() -> co.Exec:

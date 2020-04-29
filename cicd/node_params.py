@@ -19,6 +19,7 @@ https://medium.com/conducto/node-parameters-baf95e136437)
 
 
 import conducto as co
+import utils
 
 
 def cpu_and_mem() -> co.Exec:
@@ -30,9 +31,8 @@ def cpu_and_mem() -> co.Exec:
     Allocate more if necessary. You can also modify these parameters
     for any node in a live pipeline from the web app and re-run in place.
     """
-    image = co.Image("bash:5.0")
     return co.Exec(
-        "echo not doing much", cpu=0.25, mem=0.25, image=image, doc=co.util.magic_doc()
+        "echo not doing much", cpu=0.25, mem=0.25, image=utils.IMG, doc=co.util.magic_doc()
     )
 
 
@@ -59,8 +59,7 @@ def stop_on_error() -> co.Parallel:
     pipeline always runs a cleanup step.
     """
     error_doc = "**_Intentional error in this node!_**"
-    image = co.Image("bash:5.0")
-    with co.Parallel(image=image, doc=co.util.magic_doc()) as stop_on_error_example:
+    with co.Parallel(image=utils.IMG, doc=co.util.magic_doc()) as stop_on_error_example:
         with co.Serial(name="stop_on_error_default"):
             co.Exec("echo doing some setup", name="setup")
             co.Exec("this_command_will_fail", name="bad_command", doc=error_doc)
@@ -93,8 +92,7 @@ echo Then I do that.
 oops_this_is_not_a_valid_command
 echo Then I go home.
 """
-    image = co.Image("bash:5.0")
-    with co.Parallel(image=image, doc=co.util.magic_doc()) as same_container_example:
+    with co.Parallel(image=utils.IMG, doc=co.util.magic_doc()) as same_container_example:
         co.Exec(long_command, name="long_command", doc=error_doc)
         with co.Serial(name="same_container", same_container=co.SameContainer.NEW):
             co.Exec("echo This is a long command.", name="intro")
@@ -140,7 +138,6 @@ def doc():
     with a _doc_ icon in the pipeline pane. We make extensive use of this feature
     in all of our demos.
     """
-    image = co.Image("bash:5.0")
     command = "echo doc example"
     unformatted_doc = "I can have unformatted text."
     markdown_doc = "### I _can_ **use** `markdown`."
@@ -148,7 +145,7 @@ def doc():
 Markdown even supports [links](https://www.conducto.com) and images
 ![alt text](http://cdn.loc.gov/service/pnp/highsm/21700/21778r.jpg "a pretty picture")
 """
-    with co.Parallel(image=image, doc=co.util.magic_doc()) as doc_example:
+    with co.Parallel(image=utils.IMG, doc=co.util.magic_doc()) as doc_example:
         co.Exec(command, name="unformatted", doc=unformatted_doc)
         co.Exec(command, name="markdown", doc=markdown_doc)
         co.Exec(command, name="more_markdown", doc=more_markdown_doc)
@@ -165,8 +162,7 @@ def skip():
     that someone manually review the output of the pipeline before unskipping
     and running the node to complete the deployment.
     """
-    image = co.Image("bash:5.0")
-    with co.Serial(image=image, doc=co.util.magic_doc()) as skip_example:
+    with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as skip_example:
         co.Exec("echo build some stuff", name="build")
         co.Exec("echo test some stuff", name="test")
         co.Exec("echo deploy staging", name="deploy staging")

@@ -1,2 +1,0 @@
-FROM python:3.8
-RUN pip install conducto click pandas matplotlib tabulate
