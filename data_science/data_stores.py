@@ -9,7 +9,7 @@ that work in a containerized world.
 
 * Connect to your own data store (for example, AWS S3 or a database).
 * Use `co.perm_data` as a global persistent key-value store.
-* Use `co.temp_dat`a as a pipeline-local key-value store.
+* Use `co.temp_data` as a pipeline-local key-value store.
 
 [Companion tutorial here.](
 https://medium.com/conducto/data-stores-f6dc90104029)
@@ -39,7 +39,7 @@ def temp_data() -> co.Serial:
     """
     # Dockerfile installs python, R, and conducto.
     image = co.Image(
-        dockerfile="docker/Dockerfile.temp_data", context=".", copy_dir="./code"
+        dockerfile="docker/Dockerfile.temp_data", context=".", copy_dir="./code", reqs_py=["conducto"]
     )
 
     data_dir = "demo/data_science/temp_data"
