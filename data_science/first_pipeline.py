@@ -18,11 +18,11 @@ import utils
 
 def download_and_plot() -> co.Serial:
     # Download data from the United States Energy Information 
-    # Administration. This uses `conducto-perm-data` as a data
+    # Administration. This uses `conducto-data-user` as a data
     # store as detailed in our data-stores demo.
     download_command = """set -ex
 curl http://api.eia.gov/bulk/STEO.zip > data.zip
-unzip -cq data.zip | conducto-perm-data puts --name steo-data
+unzip -cq data.zip | conducto-data-user puts --name steo-data
 """
 
     # A simple pipeline that downloads data, then plots two datasets.

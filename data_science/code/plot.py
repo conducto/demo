@@ -17,7 +17,7 @@ def plot(dataset):
     """
     Read in the downloaded data, extract the specified datasets, and plot them.
     """
-    data_text = co.perm_data.gets("steo-data")
+    data_text = co.data.user.gets("steo-data")
     all_data = [json.loads(line) for line in data_text.splitlines()]
 
     DATASETS = {
@@ -52,15 +52,15 @@ def plot(dataset):
     plt.title(f"{dataset}, average by month")
     plt.legend(loc="best", fontsize="x-small")
 
-    # Save to disk, and then to co.temp_data for url.
+    # Save to disk, and then to co.data.pipeline for url.
     filename = "/tmp/image.png"
     dataname = f"conducto/demo/data_science/{dataset}.png"
     plt.savefig(filename)
-    co.temp_data.put(dataname, filename)
+    co.data.pipeline.put(dataname, filename)
 
     # Print out results as markdown
     print(f"""<ConductoMarkdown>
-![img]({co.temp_data.url(dataname)})
+![img]({co.data.pipeline.url(dataname)})
 
 {df.transpose().round(2).to_markdown()}
 </ConductoMarkdown>""")

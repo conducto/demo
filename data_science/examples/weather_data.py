@@ -4,12 +4,12 @@ import collections, conducto as co, json, re
 # Data is downloaded from the United States Energy Information Administration.
 # https://www.eia.gov/opendata/bulkfiles.php
 
-PERM_DATA_PATH = "conducto/demo/weather_data/steo.txt"
+DATA_PATH = "conducto/demo/weather_data/steo.txt"
 
 DOWNLOAD_COMMAND = f"""
 echo "Downloading"
 curl http://api.eia.gov/bulk/STEO.zip > steo.zip
-unzip -cq steo.zip | conducto-perm-data puts --name {PERM_DATA_PATH}
+unzip -cq steo.zip | conducto-data-user puts --name {DATA_PATH}
 """.strip()
 
 DATASETS = {
@@ -44,7 +44,7 @@ def display(dataset):
     """
     Read in the downloaded data, extract the specified datasets, and plot them.
     """
-    data_text = co.perm_data.gets(PERM_DATA_PATH)
+    data_text = co.data.user.gets(DATA_PATH)
     all_data = [json.loads(line) for line in data_text.splitlines()]
 
     regex = DATASETS[dataset]
@@ -94,17 +94,17 @@ def display(dataset):
     plt.title(f"{dataset}, average by month")
     plt.legend(loc="best", fontsize="x-small")
 
-    # Save to disk, and then to co.temp_data
+    # Save to disk, and then to co.data.pipeline
     filename = "/tmp/image.png"
     dataname = f"conducto/demo/weather_data/{dataset}.png"
     plt.savefig(filename)
-    co.temp_data.put(dataname, filename)
+    co.data.pipeline.put(dataname, filename)
 
     # Print out results as markdown
     print(
         f"""
 <ConductoMarkdown>
-![img]({co.temp_data.url(dataname)})
+![img]({co.data.pipeline.url(dataname)})
 
 {df.transpose().round(2).to_markdown()}
 </ConductoMarkdown>

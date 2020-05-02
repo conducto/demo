@@ -5,26 +5,26 @@ import time
 
 def clear():
     """
-    Delete all blocks from `co.perm_data`.
+    Delete all blocks from `co.data.user`.
 
-    Uses the following methods from `co.perm_data`:
+    Uses the following methods from `co.data.user`:
 
     * `list(prefix)` - get all blocks currently in the data store.
     * `delete(path)` - delete the given block from the data store
     """
     base_path = "conducto/demo/btc"
-    blocks = co.perm_data.list(base_path)
+    blocks = co.data.user.list(base_path)
     for block in blocks:
         print("Deleting", block, flush=True)
-        co.perm_data.delete(block)
+        co.data.user.delete(block)
 
 
 def download(start: int, end: int):
     """
     Download all the blocks with `start <= height <= end` and save the result
-    to perm_data. Skip any blocks that are already in `co.perm_data`.
+    to user-scoped storage. Skip any blocks that are already in `co.data.user`.
 
-    Uses the following methods from `co.perm_data`:
+    Uses the following methods from `co.data.user`:
 
     * `exists(path)` - check whether the given block exists in the data store.
     * `gets(path)` - fetch the block from the data store so it can be printed.
@@ -35,19 +35,19 @@ def download(start: int, end: int):
     for height in range(start, end + 1):
         path = f"conducto/demo/btc/height={height}"
 
-        # Check if `co.perm_data` already has this block.
-        if co.perm_data.exists(path):
+        # Check if `co.data.user` already has this block.
+        if co.data.user.exists(path):
             print(f"Data already exists for block at height {height}", flush=True)
-            data_bytes = co.perm_data.gets(path)
+            data_bytes = co.data.user.gets(path)
             _print_block(height, data_bytes)
             continue
 
         print(f"Downloading block at height={height}", flush=True)
         data = _download_block(height)
 
-        # Put the data into `co.perm_data`.
+        # Put the data into `co.data.user`.
         data_bytes = json.dumps(data).encode()
-        co.perm_data.puts(path, data_bytes)
+        co.data.user.puts(path, data_bytes)
 
 
 def _parse_height(height):

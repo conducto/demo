@@ -22,8 +22,8 @@ print(f"Saving plot to {filename}")
 fig.savefig(filename)
 
 # Put file in tempdata to get url for it.
-co.temp_data.put(name="demo_plot", file=filename)
-url = co.temp_data.url(name="demo_plot")
+co.data.pipeline.put(name="demo_plot", file=filename)
+url = co.data.pipeline.url(name="demo_plot")
 print(f"Plot at url={url}")
 
 # Generate Markdown and reference plot by url.
