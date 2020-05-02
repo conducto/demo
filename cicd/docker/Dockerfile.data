@@ -3,5 +3,5 @@ FROM golang:1.14-alpine
 # Install python
 RUN apk add --no-cache python3
 
-# Install conducto for conducto-temp-data
+# Install conducto for conducto-data-pipeline
 RUN pip3 install conducto

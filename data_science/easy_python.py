@@ -86,7 +86,7 @@ def gen_data(path: str, count: int):
     #### Function arguments
     All arguments are serialized to the command line, so only pass parameters
     and paths. Large amounts of data should be passed via a data store like
-    `co.temp_data` instead.
+    `co.data.pipeline` instead.
 
     Arguments can be basic python types (`int`, `float`, etc.),
     `date`/`time`/`datetime`, or lists thereof. Conducto infers types from the
@@ -94,7 +94,7 @@ def gen_data(path: str, count: int):
     """
     words = _get_words(count)
     text = b"\n".join(words) + b"\n"
-    co.temp_data.puts(path, text)
+    co.data.pipeline.puts(path, text)
 
 
 def _get_words(count):
@@ -179,7 +179,7 @@ def parallelize(wordlist_path, result_dir, top: int, chunksize: int) -> co.Paral
     sophisticated a pipeline as you need.
     """
     output = co.Parallel()
-    data_size = co.temp_data.size(wordlist_path)
+    data_size = co.data.pipeline.size(wordlist_path)
 
     num_chunks = math.ceil(data_size / (MAX_SIZE + 1) / chunksize)
     for i in range(num_chunks):
@@ -193,17 +193,17 @@ def parallelize(wordlist_path, result_dir, top: int, chunksize: int) -> co.Paral
 
 def do_chunk(wordlist_path: str, result_dir: str, top: int, start: int, end: int):
     # Read the specified chunk from the wordlist, from `start` to `end`
-    text = co.temp_data.gets(wordlist_path, byte_range=[start, end]).decode()
+    text = co.data.pipeline.gets(wordlist_path, byte_range=[start, end]).decode()
     words = [l.strip() for l in text.splitlines()]
     print(f"Got {len(words)} words")
 
     # Compute `top` most common words
     most = collections.Counter(words).most_common(top)
 
-    # Store result to `temp_data`
+    # Store result to pipeline-local storage
     result_text = json.dumps(most).encode()
     result_path = f"{result_dir}/{start}"
-    co.temp_data.puts(result_path, result_text)
+    co.data.pipeline.puts(result_path, result_text)
     print(f"Wrote to {result_path}")
 
     # Print out intermediate results for visual inspection
@@ -225,13 +225,13 @@ def summarize(result_dir, top: int):
     This node summarizes the results of the `parallel_word_count` step using
     a graph and a table.
     """
-    result_paths = co.temp_data.list(result_dir)
+    result_paths = co.data.pipeline.list(result_dir)
     summary = _get_summary(result_paths)
 
     filename = "/tmp/plot.png"
     _plot_summary(summary.most_common(top), filename)
-    co.temp_data.put(name="demo_plot", file=filename)
-    url = co.temp_data.url(name="demo_plot")
+    co.data.pipeline.put(name="demo_plot", file=filename)
+    url = co.data.pipeline.url(name="demo_plot")
 
     print("<ConductoMarkdown>")
     print(f"![img]({url})")
@@ -247,7 +247,7 @@ def _get_summary(result_paths):
     output = collections.Counter()
     for i, result_path in enumerate(result_paths):
         # print(f"[{i}/{len(result_paths)}] Reading {result_path}", flush=True)
-        result_text = co.temp_data.gets(result_path).decode()
+        result_text = co.data.pipeline.gets(result_path).decode()
         for word, count in json.loads(result_text):
             output[word] += count
     return output

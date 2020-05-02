@@ -8,8 +8,8 @@ machines, so there is no shared filesystem to mount. So, Conducto supports
 a few different approaches that work in a containerized world.
 
 * Connect to your own data store (for example, redis).
-* Use `conducto-temp-data` as a pipeline-local key-value store.
-* Use `conducto-perm-data` as a global persistent key-value store.
+* Use `conducto-data-pipeline` as a pipeline-local key-value store.
+* Use `conducto-data-user` as a user-wide key-value store.
 
 [Companion tutorial here.](
 https://medium.com/conducto/data-stores-cfb82460cb76)
@@ -46,9 +46,9 @@ def redis_data_store() -> co.Exec:
     return redis_store
 
 
-def conducto_temp_data() -> co.Serial:
+def data_pipeline() -> co.Serial:
     """
-    `conducto-temp-data` is a pipeline-local key-value store.
+    `conducto-data-pipeline` is a pipeline-local key-value store.
     This data is only visible to your pipeline and persists until your
     pipeline is archived. One useful application is storing binaries in a
     build node, and retrieving them in a later test node. We exercise the
@@ -57,32 +57,32 @@ def conducto_temp_data() -> co.Serial:
 
     build_cmd = """set -ex
 go build -o bin/app ./app.go
-conducto-temp-data put --name my_app_binary --file bin/app
+conducto-data-pipeline put --name my_app_binary --file bin/app
 """
     test_cmd = """set -ex
-conducto-temp-data get --name my_app_binary --file /tmp/app
+conducto-data-pipeline get --name my_app_binary --file /tmp/app
 /tmp/app --test
 """
 
     # Dockerfile installs golang and conducto.
-    dockerfile = "./docker/Dockerfile.temp_data"
+    dockerfile = "./docker/Dockerfile.data"
     image = co.Image(dockerfile=dockerfile, context=".", copy_dir="./code")
     with co.Serial(image=image, doc=co.util.magic_doc()) as build_and_test:
-        co.Exec("conducto-temp-data --help", name="usage")
+        co.Exec("conducto-data-pipeline --help", name="usage")
         co.Exec(build_cmd, name="build")
         co.Exec(test_cmd, name="test")
     return build_and_test
 
 
-def conducto_perm_data() -> co.Exec:
+def data_user() -> co.Exec:
     """
-    `conducto-perm-data` is a global persistent key-value store.
-    This is just like `conducto-temp-data`, but data is visible in all
-    pipelines and persists beyond the lifetime of your pipeline. You
-    are responsible for manually clearing your data. One useful application
-    is restoring a python virtual env to avoid repeatedly installing it
-    across nodes and pipelines. We exercise the various `cache` commands
-    to do this.
+    `co.data.user` is a key-value store like `co.data.pipeline` but scoped to
+    your user, persisting beyond the lifetime of your pipeline. You are
+    responsible for manually clearing this data.
+
+    One useful application is restoring a python virtual env to avoid repeatedly
+    installing it across nodes and pipelines. We exercise the various `cache`
+    commands to do this.
     """
 
     create_and_save_cmd = """set -ex
@@ -90,13 +90,13 @@ python -m venv venv
 . venv/bin/activate
 pip install -r code/requirements.txt
 checksum=$(md5sum code/requirements.txt | cut -d" " -f1)
-conducto-perm-data save-cache \
+conducto-data-user save-cache \
     --name code_venv --checksum $checksum --save-dir venv
 """
 
     restore_and_test_cmd = """set -ex
 checksum=$(md5sum code/requirements.txt | cut -d" " -f1)
-conducto-perm-data restore-cache \
+conducto-data-user restore-cache \
     --name code_venv --checksum $checksum --restore-dir restored_venv
 . restored_venv/venv/bin/activate
 pip list
@@ -104,11 +104,11 @@ pip list
 
     clear_cmd = """set -ex
 checksum=$(md5sum code/requirements.txt | cut -d" " -f1)
-conducto-perm-data clear-cache --name code_venv --checksum $checksum
+conducto-data-user clear-cache --name code_venv --checksum $checksum
     """
 
     with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as venv_test:
-        co.Exec("conducto-perm-data --help", name="usage")
+        co.Exec("conducto-data-user --help", name="usage")
         co.Exec(create_and_save_cmd, name="create_and_save")
         co.Exec(restore_and_test_cmd, name="restore_and_test")
         co.Exec(clear_cmd, name="clear")
@@ -118,8 +118,8 @@ conducto-perm-data clear-cache --name code_venv --checksum $checksum
 def examples() -> co.Parallel:
     ex = co.Parallel(doc=__doc__)
     ex["redis_data_store_wrapper"] = _redis_wrapper()
-    ex["conducto_temp_data"] = conducto_temp_data()
-    ex["conducto_perm_data"] = conducto_perm_data()
+    ex["co.data.pipeline"] = data_pipeline()
+    ex["co.data.user"] = data_user()
     return ex
 
 

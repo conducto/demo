@@ -119,7 +119,7 @@ def same_container_2():
     lost. To restore the container state you need to rerun all the nodes, making
     debugging or error resetting a little more awkward.
     """
-    dockerfile = "./docker/Dockerfile.temp_data"
+    dockerfile = "./docker/Dockerfile.data"
     image = co.Image(dockerfile=dockerfile, context=".", copy_dir="./code")
     with co.Parallel(image=image, doc=co.util.magic_doc()) as same_container_example:
         with co.Serial(name="shared_filesystem", same_container=co.SameContainer.NEW):

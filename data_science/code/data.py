@@ -16,7 +16,7 @@ YEARS = 20 # Do 20 years per trial
 @click.option("--window", type=int, required=True, help="window of moving average")
 @click.option("--mean", type=float, required=True, help="mean annual return of generated data")
 @click.option("--volatility", type=float, required=True, help="annual standard deviation of generated data")
-@click.option("--data-dir", required=True, help="directory in co.temp_data to store results")
+@click.option("--data-dir", required=True, help="directory in co.data.pipeline to store results")
 def run(window, mean, volatility, data_dir):
     """
     Monte Carlo test of a simple trading strategy against some randomly generated market
@@ -64,10 +64,10 @@ def run(window, mean, volatility, data_dir):
         if i % 250 == 0:
             print(f"Run #{i}: Result is ${round(cash, 2)}", flush=True)
 
-    # Save result to Conducto's temp_data store
+    # Save result to Conducto's pipeline-scoped data store
     path = "{}/mn={:.2f}_vol={:.2f}_win={:03}".format(data_dir, mean, volatility, window)
     data = json.dumps(output).encode()
-    co.temp_data.puts(path, data)
+    co.data.pipeline.puts(path, data)
 
 
 def moving_average(a, n=3) :
