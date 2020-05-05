@@ -16,6 +16,7 @@ https://medium.com/conducto/data-stores-f6dc90104029)
 """
 
 import conducto as co
+import utils
 from code import btc
 
 
@@ -96,15 +97,14 @@ def perm_data() -> co.Serial:
     To clear the downloaded data and see these nodes in action again, select
     the "clear" node and click the _Unskip_ button.
     """
-    image = co.Image("python:3.8", copy_dir="./code", reqs_py=["conducto", "blockchain"])
-    with co.Serial(image=image, doc=co.util.magic_doc()) as out:
+    with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as out:
         doc = co.util.magic_doc(func=btc.download)
         cleardoc = co.util.magic_doc(func=btc.clear)
         out["perm_data_usage"] = co.Exec("conducto-perm-data --help")
-        out["download_20-11"] = co.Exec("python btc.py download --start=-20 --end=-11", doc=doc)
-        out["download_15-6"] = co.Exec("python btc.py download --start=-15 --end=-6", doc=doc)
-        out["download_10-now"] = co.Exec("python btc.py download --start=-10 --end=-1", doc=doc)
-        out["clear"] = co.Exec("python btc.py clear", skip=True, doc=cleardoc)
+        out["download_20-11"] = co.Exec("python code/btc.py download --start=-20 --end=-11", doc=doc)
+        out["download_15-6"] = co.Exec("python code/btc.py download --start=-15 --end=-6", doc=doc)
+        out["download_10-now"] = co.Exec("python code/btc.py download --start=-10 --end=-1", doc=doc)
+        out["clear"] = co.Exec("python code/btc.py clear", skip=True, doc=cleardoc)
     return out
 
 

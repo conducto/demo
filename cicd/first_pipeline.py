@@ -17,7 +17,7 @@ import conducto as co
 
 
 def build_and_test() -> co.Serial:
-    image = co.Image(image="golang:1.14", copy_dir="./code")
+    image = co.Image(image="golang:1.14-alpine", copy_dir="./code")
     with co.Serial(image=image, doc=co.util.magic_doc()) as pipeline:
         with co.Parallel(name="build"):
             co.Exec("go build -x auth.go", name="auth")
