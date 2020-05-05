@@ -34,7 +34,7 @@ print(table)
 
 def existing_image() -> co.Exec:
     """Specify any existing image from Dockerhub or another image registry."""
-    image = co.Image("node:lts-buster")
+    image = co.Image("node:lts-alpine")
     return co.Exec("npm help", image=image, doc=co.util.magic_doc())
 
 
