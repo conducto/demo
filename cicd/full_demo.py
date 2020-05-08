@@ -27,7 +27,7 @@ def cicd() -> co.Parallel:
     from conducto.shared.log import unindent
 
     pretty_doc = unindent(__doc__)
-    with co.Serial(doc=pretty_doc, stop_on_error=False) as full:
+    with co.Serial(doc=pretty_doc, stop_on_error=False, tags=["demo_cicd"]) as full:
         full["first_pipeline"] = first_pipeline.build_and_test()
         full["execution_env"] = execution_env.examples()
         full["env_secrets"] = env_secrets.examples()
