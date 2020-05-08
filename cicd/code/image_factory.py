@@ -32,12 +32,12 @@ class ImageFactory(object):
         from_dir = os.path.dirname(from_file) or "."
         cls.context = cls._shell(f"git -C {from_dir} rev-parse --show-toplevel")
         if branch is None:
-            cls._init_local()
+            cls._init_local(from_dir=from_dir)
         else:
             cls._init_git(branch)
 
     @classmethod
-    def _init_local(cls):
+    def _init_local(cls, from_dir):
         """
         Init from local git checkout, copy local code into image.
         Just set `copy_dir` to the local root of this git checkout.
@@ -49,9 +49,9 @@ class ImageFactory(object):
         cls.path_map = None
         cls.git_env = {
             "GIT_SHA1": os.environ.get("GIT_SHA1") or \
-                cls._shell("git rev-parse HEAD"),
+                cls._shell(f"git -C {from_dir} rev-parse HEAD"),
             "GIT_BRANCH": os.environ.get("GIT_BRANCH") or \
-                cls._shell("git rev-parse --abbrev-ref HEAD"),
+                cls._shell(f"git -C {from_dir} rev-parse --abbrev-ref HEAD"),
         }
 
     @classmethod
