@@ -9,6 +9,9 @@ It downloads some data, then plots two datasets from it.
 
 [Companion tutorial here.](
 https://medium.com/conducto/your-first-data-science-pipeline-cc9ceac142f6)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/data_science/first_pipeline.py)
 """
 
 

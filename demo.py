@@ -26,6 +26,9 @@ then run the demo.
 
     cd data_science
     python full_demo.py --local
+
+See the full code for this demo [here](
+https://github.com/conducto/demo/blob/master/demo.py).
 """
 
 
@@ -63,6 +66,9 @@ def islands() -> co.Serial:
 
     Click the _Run_ button on the right to execute the pipeline. The
     pipeline should run successfully and finish in the green _done_ state.
+
+    See the full code for this demo [here](
+    https://github.com/conducto/demo/blob/master/demo.py).
     """
     with co.Serial(doc=co.util.magic_doc(), image="bash:5.0", tags=["demo_simple"]) as pipeline:
         pipeline["hawaii"] = co.Exec("echo big island")

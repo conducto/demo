@@ -18,6 +18,9 @@ subnode to debug each one as an exercise.
 
 [Companion tutorial here.] (
 https://medium.com/conducto/easy-error-resolution-b9f2b54f22b7)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/cicd/error_resolution.py)
 """
 
 

@@ -16,6 +16,9 @@ find a full list of tutorials in [Conducto for CI/CD](
 https://medium.com/conducto/getting-started-with-conducto-for-ci-cd-b6afb626f410).
 
 Click *Run* to get started and learn how to supercharge your CI/CD pipelines!
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/cicd/full_demo.py)
 """
 
 import conducto as co

@@ -15,6 +15,9 @@ Note: **_Errors in this node are intentional._**
 
 [Companion tutorial here.](
 https://medium.com/conducto/node-parameters-baf95e136437)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/cicd/node_params.py)
 """
 
 

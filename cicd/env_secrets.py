@@ -6,6 +6,9 @@ Examples of how to specify:
 
 [Companion tutorial here.](
 https://medium.com/conducto/environment-variables-and-secrets-12256150e94d)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/cicd/env_secrets.py)
 """
 
 

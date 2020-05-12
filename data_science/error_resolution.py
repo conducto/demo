@@ -18,6 +18,9 @@ subnode to debug each one as an exercise.
 
 [Companion tutorial here.] (
 https://medium.com/conducto/easy-error-resolution-45ca08d40f1d)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/data_science/error_resolution.py)
 """
 
 

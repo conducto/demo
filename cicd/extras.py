@@ -9,6 +9,9 @@ wanted to share them in case they help.
 
 [Companion tutorial here.](
 https://medium.com/conducto/ci-cd-extras-77a9c5ac8289)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/cicd/extras.py)
 """
 
 import conducto as co

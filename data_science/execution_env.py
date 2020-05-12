@@ -18,6 +18,9 @@ Live debug can be enabled with path_map:
 
 [Companion tutorial here.](
 https://medium.com/conducto/execution-environment-3bb663549a0c)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/data_science/execution_env.py)
 """
 
 import conducto as co

@@ -18,6 +18,9 @@ The algorithm is simple but illustrates a common pattern in data science:
 
 [Companion tutorial here.](
 https://medium.com/conducto/easy-and-powerful-python-pipelines-2de5825375f2)
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/data_science/easy_python.py)
 """
 
 

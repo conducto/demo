@@ -17,6 +17,9 @@ https://medium.com/conducto/conducto-for-data-science-59f426ee57b).
 
 Click *Run* to get started and learn how to supercharge your Data Science
 pipelines!
+
+[Code for this pipeline here.](
+https://github.com/conducto/demo/blob/master/data_science/full_demo.py)
 """
 
 import conducto as co
