@@ -61,7 +61,7 @@ def islands() -> co.Serial:
     pipeline using a simple python interface. This is a simple example that
     creates a pipeline consisting of `echo` commands.
 
-    Click the _View_ button the left to expand the pipeline. See how the
+    Click the _View_ button on the left to expand the pipeline. See how the
     pipeline tree structure mirrors the python specification below.
 
     Click the _Run_ button on the right to execute the pipeline. The
