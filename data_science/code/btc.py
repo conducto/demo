@@ -60,13 +60,15 @@ def _parse_height(height):
         return height
     else:
         from blockchain import blockexplorer, util
-        util.TIMEOUT = 30  # time out after 5 seconds
+        # Wait up to two minutes for a response
+        util.TIMEOUT = 2 * 60
         return blockexplorer.get_latest_block().height + 1 + height
 
 
 def _download_block(height):
     from blockchain import blockexplorer, util
-    util.TIMEOUT = 30  # time out after 5 seconds
+    # Wait up to two minutes for a response
+    util.TIMEOUT = 2 * 60
     block = blockexplorer.get_block_height(height)[0]
     n_tx = len([tx for tx in block.transactions])
     n_outs = len([txo for tx in block.transactions for txo in tx.outputs])
