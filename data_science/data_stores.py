@@ -119,4 +119,5 @@ def examples() -> co.Serial:
 
 if __name__ == "__main__":
     print(__doc__)
+    co.Image.register_directory("CONDUCTO_DEMO", "..")
     co.main(default=examples)
