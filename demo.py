@@ -85,4 +85,5 @@ def islands() -> co.Serial:
             
 
 if __name__ == "__main__":
+    co.Image.register_directory("CONDUCTO_DEMO", ".")
     co.main()
