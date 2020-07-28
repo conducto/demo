@@ -115,37 +115,37 @@ def our_cicd_config() -> co.Exec:
          branch from github into the image.
     * In both cases we want _livedebug_ to work for easier debugging.
 
-    The logic to do this is encapsulated in `cicd/code/image_factory.py`.
-    Notice that `ImageFactory` allows the dev_mode and pr_mode pipeline
-    configurations to be almost identical.
-
     ### **Our Dockerfile**
     Finally, as a convenience, we specify a single Dockerfile that installs
     the most common libraries and tools that we need for running and debugging
     our ci/cid pipeline, and use that for almost all of our nodes. That file
     is located in `cicd/docker/Dockerfile.conducto`.
     """
-    from code.image_factory import ImageFactory
 
-    with co.Parallel(doc=co.util.magic_doc()) as image_factory_example:
-        ImageFactory.init()
-        dockerfile = f"{ImageFactory.context}/cicd/docker/Dockerfile.conducto"
-        dev_image = ImageFactory.get(dockerfile=dockerfile, reqs_py=["conducto"])
+    with co.Parallel(doc=co.util.magic_doc()) as output:
+        dockerfile = f"./docker/Dockerfile.conducto"
+
+        dev_image = co.Image(dockerfile=dockerfile, reqs_py=["conducto"], copy_dir="..")
+        pr_image = co.Image(
+            dockerfile=dockerfile,
+            reqs_py=["conducto"],
+            copy_url="https://github.com/conducto/demo.git",
+            copy_branch="main",
+        )
+
         with co.Serial(image=dev_image, name="dev_mode"):
             # Some dummy commands to show that our image is configured.
             co.Exec("ls -l cicd", name="ls_code_from_local")
             co.Exec("cat cicd/docker/Dockerfile.conducto", name="show_dockerfile")
             co.Exec("python cicd/extras.py --help", name="show_extras_help")
 
-        ImageFactory.init(branch="main")
-        pr_image = ImageFactory.get(dockerfile=dockerfile, reqs_py=["conducto"])
         with co.Serial(image=pr_image, name="pr_mode"):
             # Some dummy commands to show that our image is configured.
             co.Exec("ls -l cicd", name="ls_code_from_git_clone")
             co.Exec("cat cicd/docker/Dockerfile.conducto", name="show_dockerfile")
             co.Exec("python cicd/extras.py --help", name="show_extras_help")
 
-    return image_factory_example
+    return output
 
 
 def examples() -> co.Parallel:
