@@ -20,7 +20,7 @@ Live debug can be enabled with path_map:
 https://medium.com/conducto/execution-environment-5a66ff0a10bc)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/cicd/execution_env.py)
+https://github.com/conducto/demo/blob/main/cicd/execution_env.py)
 """
 
 import conducto as co
@@ -70,7 +70,7 @@ def clone_from_git() -> co.Exec:
     """
     git_url = "https://github.com/conducto/demo.git"
     image = co.Image(
-        dockerfile="./docker/Dockerfile.git", copy_url=git_url, copy_branch="master",
+        dockerfile="./docker/Dockerfile.git", copy_url=git_url, copy_branch="main",
     )
     return co.Exec("python cicd/code/test.py", image=image, doc=co.util.magic_doc())
 
@@ -95,7 +95,7 @@ def clone_from_git_with_path_map() -> co.Exec:
     image = co.Image(
         dockerfile="./docker/Dockerfile.git",
         copy_url=git_url,
-        copy_branch="master",
+        copy_branch="main",
         path_map=path_map,
     )
     return co.Exec("python cicd/code/test.py", image=image, doc=co.util.magic_doc())

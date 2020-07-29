@@ -11,7 +11,7 @@ wanted to share them in case they help.
 https://medium.com/conducto/ci-cd-extras-77a9c5ac8289)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/cicd/extras.py)
+https://github.com/conducto/demo/blob/main/cicd/extras.py)
 """
 
 import conducto as co
@@ -137,7 +137,7 @@ def our_cicd_config() -> co.Exec:
             co.Exec("cat cicd/docker/Dockerfile.conducto", name="show_dockerfile")
             co.Exec("python cicd/extras.py --help", name="show_extras_help")
 
-        ImageFactory.init(branch="master")
+        ImageFactory.init(branch="main")
         pr_image = ImageFactory.get(dockerfile=dockerfile, reqs_py=["conducto"])
         with co.Serial(image=pr_image, name="pr_mode"):
             # Some dummy commands to show that our image is configured.

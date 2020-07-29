@@ -15,7 +15,7 @@ a few different approaches that work in a containerized world.
 https://medium.com/conducto/data-stores-cfb82460cb76)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/cicd/data_stores.py)
+https://github.com/conducto/demo/blob/main/cicd/data_stores.py)
 """
 
 

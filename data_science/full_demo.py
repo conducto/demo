@@ -19,7 +19,7 @@ Click *Run* to get started and learn how to supercharge your Data Science
 pipelines!
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/data_science/full_demo.py)
+https://github.com/conducto/demo/blob/main/data_science/full_demo.py)
 """
 
 import conducto as co

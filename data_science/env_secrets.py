@@ -8,7 +8,7 @@ Examples of how to specify:
 https://medium.com/conducto/environment-variables-and-secrets-9acab502ec77)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/data_science/env_secrets.py)
+https://github.com/conducto/demo/blob/main/data_science/env_secrets.py)
 """
 
 

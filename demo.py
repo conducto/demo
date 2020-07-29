@@ -28,7 +28,7 @@ then run the demo.
     python full_demo.py --local
 
 See the full code for this demo [here](
-https://github.com/conducto/demo/blob/master/demo.py).
+https://github.com/conducto/demo/blob/main/demo.py).
 """
 
 
@@ -68,7 +68,7 @@ def islands() -> co.Serial:
     pipeline should run successfully and finish in the green _done_ state.
 
     See the full code for this demo [here](
-    https://github.com/conducto/demo/blob/master/demo.py).
+    https://github.com/conducto/demo/blob/main/demo.py).
     """
     with co.Serial(doc=co.util.magic_doc(), image="bash:5.0", tags=["demo_simple"]) as pipeline:
         pipeline["hawaii"] = co.Exec("echo big island")

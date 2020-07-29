@@ -20,7 +20,7 @@ The algorithm is simple but illustrates a common pattern in data science:
 https://medium.com/conducto/easy-and-powerful-python-pipelines-2de5825375f2)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/data_science/easy_python.py)
+https://github.com/conducto/demo/blob/main/data_science/easy_python.py)
 """
 
 
@@ -103,7 +103,7 @@ def gen_data(path: str, count: int):
 def _get_words(count):
     import urllib.request
 
-    url = "https://github.com/dwyl/english-words/raw/master/words.txt"
+    url = "https://github.com/dwyl/english-words/raw/main/words.txt"
     text = urllib.request.urlopen(url).read()
     words_raw = text.splitlines()
 

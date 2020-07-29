@@ -12,7 +12,7 @@ It builds two go binaries and tests them.
 https://medium.com/conducto/your-first-pipeline-32a303b2cc5d)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/cicd/first_pipeline.py)
+https://github.com/conducto/demo/blob/main/cicd/first_pipeline.py)
 """
 
 

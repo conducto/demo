@@ -17,7 +17,7 @@ Note: **_Errors in this node are intentional._**
 https://medium.com/conducto/node-parameters-7be236eaeaac)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/data_science/node_params.py)
+https://github.com/conducto/demo/blob/main/data_science/node_params.py)
 """
 
 

@@ -15,7 +15,7 @@ that work in a containerized world.
 https://medium.com/conducto/data-stores-f6dc90104029)
 
 [Code for this pipeline here.](
-https://github.com/conducto/demo/blob/master/data_science/data_stores.py)
+https://github.com/conducto/demo/blob/main/data_science/data_stores.py)
 """
 
 import conducto as co
