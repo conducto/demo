@@ -42,9 +42,8 @@ def user_secrets() -> co.Exec:
         "DEMO_SSN": "Never in code",
     }
 
-    token = co.api.Auth().get_token_from_shell()
     secrets = co.api.Secrets()
-    secrets.put_user_secrets(token, user_secrets, replace=False)
+    secrets.put_user_secrets(user_secrets, replace=False)
 
     command = "env | grep -e DEMO_PASSWORD -e DEMO_SSN"
     return co.Exec(command, image=utils.IMG, doc=co.util.magic_doc())
