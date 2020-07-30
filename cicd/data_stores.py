@@ -28,24 +28,16 @@ def redis_data_store() -> co.Exec:
     There are many standard ways to store persistent data: databases,
     AWS S3, and in-memory caches like redis. An exec node can run any
     shell command, so it is easy to use any of these approaches. Here
-    we populate environment variables pointing to our redis service,
-    allowing us to write to and read from redis in a python script.
+    we use the redis cli via a redis docker container running on the
+    same network as our mock redis server.
     """
 
-    # export_cmd is just a hack to set REDIS_HOST to our mock instance
-    export_cmd = (
-        "export REDIS_HOST=$(ip route show default | awk '/default/{print $3}')"
-    )
-    redis_write_cmd = f"{export_cmd} && python code/redis_example.py --write"
-    redis_read_cmd = f"{export_cmd} && python code/redis_example.py --read"
+    network = "container:conducto_demo_redis"
+    redis_cli_cmd = f"docker run --rm --network {network} redis:5.0-alpine redis-cli "
 
-    env = {
-        "REDIS_HOST": "override_me",
-        "REDIS_PORT": "6379",
-    }
-    with co.Serial(image=utils.IMG, env=env, doc=co.util.magic_doc()) as redis_store:
-        co.Exec(redis_write_cmd, name="redis_write")
-        co.Exec(redis_read_cmd, name="redis_read")
+    with co.Serial(doc=co.util.magic_doc()) as redis_store:
+        co.Exec(redis_cli_cmd + "set foo 100", name="redis_write")
+        co.Exec(redis_cli_cmd + "get foo", name="redis_read")
     return redis_store
 
 
@@ -64,6 +56,7 @@ conducto-data-pipeline put --name my_app_binary --file bin/app
 """
     test_cmd = """set -ex
 conducto-data-pipeline get --name my_app_binary --file /tmp/app
+chmod u+x /tmp/app
 /tmp/app --test
 """
 
@@ -108,7 +101,7 @@ pip list
     clear_cmd = """set -ex
 checksum=$(md5sum code/requirements.txt | cut -d" " -f1)
 conducto-data-user clear-cache --name code_venv --checksum $checksum
-    """
+"""
 
     with co.Serial(image=utils.IMG, doc=co.util.magic_doc()) as venv_test:
         co.Exec("conducto-data-user --help", name="usage")
@@ -150,6 +143,7 @@ docker inspect {name} --format="{{{{.State.Running}}}}"
         image="docker:19.03",
         stop_on_error=False,
         requires_docker=True,
+        same_container=co.SameContainer.NEW,
         doc=co.util.magic_doc(doc_only=True),
     ) as wrapper:
         co.Exec(mock_redis_start_cmd, name="mock_redis_start")

@@ -4,5 +4,5 @@ IMG = co.Image(
     dockerfile="docker/Dockerfile.util",
     context=".",
     copy_dir=".",
-    reqs_py=["conducto", "matplotlib", "numpy", "Click", "redis", "PTable"]
+    reqs_py=["conducto", "matplotlib", "numpy", "Click", "PTable"]
 )
