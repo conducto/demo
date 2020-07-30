@@ -103,7 +103,7 @@ def gen_data(path: str, count: int):
 def _get_words(count):
     import urllib.request
 
-    url = "https://github.com/dwyl/english-words/raw/main/words.txt"
+    url = "https://github.com/dwyl/english-words/raw/master/words.txt"
     text = urllib.request.urlopen(url).read()
     words_raw = text.splitlines()
 
