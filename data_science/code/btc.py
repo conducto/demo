@@ -69,7 +69,18 @@ def _download_block(height):
     from blockchain import blockexplorer, util
     # Wait a few minutes for a response
     util.TIMEOUT = 5 * 60
-    block = blockexplorer.get_block_height(height)[0]
+    MAX_TRIES = 5
+    for i in range(MAX_TRIES):
+        try:
+            block = blockexplorer.get_block_height(height)[0]
+            break
+        except Exception as e:
+            if i < MAX_TRIES-1:
+                sleep_secs = (i+1) * 30
+                print(f"Exception in get_block_height, try again in {sleep_secs} s: {e}", flush=True)
+                time.sleep(sleep_secs)
+            else:
+                raise e
     n_tx = len([tx for tx in block.transactions])
     n_outs = len([txo for tx in block.transactions for txo in tx.outputs])
     print(f"- Block with height {height} arrived at {time.ctime(block.time)} with "
