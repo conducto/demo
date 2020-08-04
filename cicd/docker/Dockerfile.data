@@ -5,4 +5,4 @@ RUN apk add --no-cache python3
 RUN python3 -m ensurepip
 
 # Install conducto for conducto-data-pipeline
-RUN pip3 install conducto
+RUN pip3 install conducto>=0.0.71
