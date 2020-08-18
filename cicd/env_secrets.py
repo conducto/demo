@@ -42,7 +42,7 @@ def user_secrets() -> co.Exec:
     }
 
     secrets = co.api.Secrets()
-    secrets.put_user_secrets(user_secrets, replace=False)
+    secrets.put_user_secrets(user_secrets)
 
     command = "env | grep -e DEMO_PASSWORD -e DEMO_SSN"
     return co.Exec(command, image=utils.IMG, doc=co.util.magic_doc())
