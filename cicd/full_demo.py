@@ -26,11 +26,15 @@ import first_pipeline, execution_env, env_secrets, data_stores
 import node_params, error_resolution, extras
 
 
-def cicd() -> co.Parallel:
+def cicd(parallel=False) -> co.Parallel:
     from conducto.shared.log import unindent
 
     pretty_doc = unindent(__doc__)
-    with co.Serial(doc=pretty_doc, stop_on_error=False, tags=["demo_cicd"]) as full:
+    if parallel:
+        root_type = co.Parallel
+    else:
+        root_type = lambda **kwargs: co.Serial(stop_on_error=False, **kwargs)
+    with root_type(doc=pretty_doc, tags=["demo_cicd"]) as full:
         full["first_pipeline"] = first_pipeline.build_and_test()
         full["execution_env"] = execution_env.examples()
         full["env_secrets"] = env_secrets.examples()
