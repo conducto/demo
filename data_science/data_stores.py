@@ -111,7 +111,7 @@ def data_user() -> co.Serial:
 
 
 def examples() -> co.Serial:
-    ex = co.Serial(doc=__doc__)
+    ex = co.Parallel(doc=__doc__)
     ex["co.data.pipeline"] = data_pipeline()
     ex["co.data.user"] = data_user()
     return ex

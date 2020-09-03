@@ -27,15 +27,11 @@ import first_pipeline, execution_env, env_secrets, data_stores
 import node_params, error_resolution, easy_python
 
 
-def data_science(parallel=False) -> co.Parallel:
+def data_science() -> co.Parallel:
     from conducto.shared.log import unindent
 
     pretty_doc = unindent(__doc__)
-    if parallel:
-        root_type = co.Parallel
-    else:
-        root_type = lambda **kwargs: co.Serial(stop_on_error=False, **kwargs)
-    with root_type(doc=pretty_doc, tags=["demo_data_science"]) as full:
+    with co.Parallel(doc=pretty_doc, tags=["demo_data_science"]) as full:
         full["first_pipeline"] = first_pipeline.download_and_plot()
         full["execution_env"] = execution_env.examples()
         full["env_secrets"] = env_secrets.examples()
