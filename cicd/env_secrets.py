@@ -57,5 +57,5 @@ def examples() -> co.Parallel:
 
 if __name__ == "__main__":
     print(__doc__)
-    co.Image.register_directory("CONDUCTO_DEMO", "..")
+    co.Image.share_directory("CONDUCTO_DEMO", "..")
     co.main(default=examples)
