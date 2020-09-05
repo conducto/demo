@@ -15,7 +15,7 @@ def clear():
     base_path = "conducto/demo/btc"
     blocks = co.data.user.list(base_path)
     for block in blocks:
-        print("Deleting", block, flush=True)
+        print("Deleting", block)
         co.data.user.delete(block)
 
 
@@ -37,12 +37,12 @@ def download(start: int, end: int):
 
         # Check if `co.data.user` already has this block.
         if co.data.user.exists(path):
-            print(f"Data already exists for block at height {height}", flush=True)
+            print(f"Data already exists for block at height {height}")
             data_bytes = co.data.user.gets(path)
             _print_block(height, data_bytes)
             continue
 
-        print(f"Downloading block at height={height}", flush=True)
+        print(f"Downloading block at height={height}")
         data = _download_block(height)
 
         # Put the data into `co.data.user`.
@@ -84,7 +84,7 @@ def _download_block(height):
     n_tx = len([tx for tx in block.transactions])
     n_outs = len([txo for tx in block.transactions for txo in tx.outputs])
     print(f"- Block with height {height} arrived at {time.ctime(block.time)} with "
-          f"{n_tx} transactions and a total of {n_outs} outputs.", flush=True)
+          f"{n_tx} transactions and a total of {n_outs} outputs.")
 
     return {"t": block.time, "n_tx": n_tx, "n_outs": n_outs}
 
@@ -92,7 +92,7 @@ def _download_block(height):
 def _print_block(height, data_bytes):
     data = json.loads(data_bytes)
     print(f"- Block with height {height} arrived at {time.ctime(data['t'])} with "
-          f"{data['n_tx']} transactions and a total of {data['n_outs']} outputs.", flush=True)
+          f"{data['n_tx']} transactions and a total of {data['n_outs']} outputs.")
 
 
 if __name__ == "__main__":

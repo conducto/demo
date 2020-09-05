@@ -62,7 +62,7 @@ def run(window, mean, volatility, data_dir):
         output.append(cash)
 
         if i % 250 == 0:
-            print(f"Run #{i}: Result is ${round(cash, 2)}", flush=True)
+            print(f"Run #{i}: Result is ${round(cash, 2)}")
 
     # Save result to Conducto's pipeline-scoped data store
     path = "{}/mn={:.2f}_vol={:.2f}_win={:03}".format(data_dir, mean, volatility, window)
