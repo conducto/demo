@@ -249,7 +249,7 @@ def summarize(result_dir, top: int):
 def _get_summary(result_paths):
     output = collections.Counter()
     for i, result_path in enumerate(result_paths):
-        # print(f"[{i}/{len(result_paths)}] Reading {result_path}", flush=True)
+        # print(f"[{i}/{len(result_paths)}] Reading {result_path}")
         result_text = co.data.pipeline.gets(result_path).decode()
         for word, count in json.loads(result_text):
             output[word] += count
