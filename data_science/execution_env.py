@@ -35,7 +35,7 @@ print(arr)
 
 def existing_image() -> co.Exec:
     """Specify any existing image from Dockerhub or another image registry."""
-    image = co.Image("r-base:3.5.0")
+    image = co.Image("rocker/r-ver:3.6.3")
     return co.Exec("Rscript --help", image=image, doc=co.util.magic_doc())
 
 
@@ -57,7 +57,7 @@ def dockerfile() -> co.Exec:
 
 def copy_local_code() -> co.Exec:
     """Copy local code into your image with `copy_dir`."""
-    image = co.Image("r-base:3.5.0", copy_dir="./code")
+    image = co.Image("rocker/r-ver:3.6.3", copy_dir="./code")
     return co.Exec("Rscript simple.R", image=image, doc=co.util.magic_doc())
 
 

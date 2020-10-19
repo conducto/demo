@@ -1,2 +1,2 @@
-FROM r-base:3.5.0
+FROM rocker/r-ver:3.6.3
 RUN apt-get update && apt-get install -y git
